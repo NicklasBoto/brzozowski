@@ -29,7 +29,6 @@ data Regex
         -- \[ \neg \Gamma \hspace{10pt} \Gamma \subseteq \Sigma^* \]
         | Comp  Regex
         -- | All possible concatenations
-        -- \[ \{a\}\{b\} := \{a, b, ab, ba\} \]
         | Conc  Regex Regex
         -- | [Kleene star operator](https://en.wikipedia.org/wiki/Kleene_star)
         | Star  Regex
@@ -46,7 +45,19 @@ data Regex
 
 -- | Synonym for the @Conc@ constructor
 (***) :: Regex -> Regex -> Regex
-(***) = Conc
+x   *** Eps = x
+Eps *** y   = y
+x   *** y   = Conc x y
+
+-- | Treat string as concatenation of symbol regexes
+r :: String -> Regex
+r = foldMap Sym
+
+-- | Synonym for @Star@ constructor
+some :: Regex -> Regex
+some = Star
+
+
 
 -- * Instances
 
@@ -54,16 +65,16 @@ instance Show Regex where
         show Nil = "{}"
         show Eps = "ε"
         show (Sym c) = [c]
-        show (Union r1 r2) = show r1 ++ "<|>" ++ show r2 
-        show (Inter r1 r2) = show r1 ++ "<^>" ++ show r2 
-        show (Conc r1 r2) = show r1 ++ "***" ++ show r2 
+        show (Union r1 r2) = show r1 ++ "|" ++ show r2 
+        show (Inter r1 r2) = show r1 ++ "^" ++ show r2 
+        show (Conc r1 r2) = show r1 ++ show r2 
         show (Star r) = '(' : show r ++ ")*"
 
 instance Semigroup Regex where
         (<>) = (***)
 
 instance Monoid Regex where
-        mempty = Nil
+        mempty = Eps
 
 
 -- * Derivatives
@@ -75,4 +86,7 @@ instance Monoid Regex where
 -- \]
 derive :: Char -> Regex -> Regex
 derive = undefined
+
+santa :: Regex
+santa = some $ r"ha" <|> r"ho"
 
