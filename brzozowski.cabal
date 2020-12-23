@@ -2,12 +2,12 @@ name:                brzozowski
 version:             0.1.0.0
 -- synopsis:
 -- description:
-homepage:            https://github.com/githubuser/brzozowski#readme
-license:             BSD3
+homepage:            https://github.com/NicklasBoto/brzozowski#readme
+license:             GPLv3
 license-file:        LICENSE
-author:              Author name here
-maintainer:          example@example.com
-copyright:           2020 Author name here
+author:              Nicklas Botö
+maintainer:          git@nicbot.xyz
+copyright:           2020 Nicklas Botö
 category:            Web
 build-type:          Simple
 cabal-version:       >=1.10
