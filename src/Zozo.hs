@@ -53,7 +53,7 @@ where
 
 import qualified Data.Set                      as S
 import           Data.String
-import GHC.Exts
+import           GHC.Exts
 
 -- *  Language definition
 
