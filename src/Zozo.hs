@@ -30,15 +30,23 @@ module Zozo
     , some
     , many
     , unit
+    , nu
     ,
 
         -- * Derivatives
       mem
     , derive
+    , (^-)
+
+        -- * Evaluation
+    , rreduce
+    , eval
     )
 where
 
 import qualified Data.Set                      as S
+
+-- * The Regex type
 
 -- | A simple regex lang
 data Regex
@@ -69,7 +77,7 @@ instance Show Regex where
         sw Eps           = "ε"
         sw (Sym c      ) = [c]
         sw (Union r1 r2) = '(' : sw r1 ++ "|" ++ sw r2 ++ ")"
-        sw (Inter r1 r2) = sw r1 ++ "^" ++ sw r2
+        sw (Inter r1 r2) = '(' : sw r1 ++ "^" ++ sw r2 ++ ")"
         sw (Conc  r1 r2) = sw r1 ++ sw r2
         sw (Comp r     ) = "~(" ++ sw r ++ ")"
         sw (Star r     ) = '(' : sw r ++ ")*"
@@ -122,7 +130,12 @@ some = Star
 many :: Regex -> Regex
 many r = some r *** r
 
--- | 1 function
+-- | \[
+-- \mathbb{1}_x = \begin{cases}
+--          \epsilon \quad & x = \top \\
+--          \varnothing \quad & \text{otherwise} \\
+--         \end{cases}
+-- \]
 unit :: Bool -> Regex
 unit True  = Eps
 unit False = Nil
