@@ -63,14 +63,16 @@ data Regex
         | Star  Regex
 
 instance Show Regex where
-    show Nil           = "{}"
-    show Eps           = "ε"
-    show (Sym c      ) = [c]
-    show (Union r1 r2) = show r1 ++ "|" ++ show r2
-    show (Inter r1 r2) = show r1 ++ "^" ++ show r2
-    show (Conc  r1 r2) = show r1 ++ show r2
-    show (Comp r     ) = "~(" ++ show r ++ ")"
-    show (Star r     ) = '(' : show r ++ ")*"
+    show r = '^' : sw r ++ "$"
+      where
+        sw Nil           = "{}"
+        sw Eps           = "ε"
+        sw (Sym c      ) = [c]
+        sw (Union r1 r2) = '(' : sw r1 ++ "|" ++ sw r2 ++ ")"
+        sw (Inter r1 r2) = sw r1 ++ "^" ++ sw r2
+        sw (Conc  r1 r2) = sw r1 ++ sw r2
+        sw (Comp r     ) = "~(" ++ sw r ++ ")"
+        sw (Star r     ) = '(' : sw r ++ ")*"
 
 instance Semigroup Regex where
     (<>) = (***)
@@ -85,7 +87,9 @@ deriving instance Eq Regex
 -- | Synonym for the @Union@ constructor
 infixl 5 <|>
 (<|>) :: Regex -> Regex -> Regex
-(<|>) = Union
+x   <|> Nil = x
+Nil <|> y   = y
+x   <|> y   = Union x y
 
 -- | Synonym for the @Inter@ constructor
 infixl 5 <^>
@@ -97,6 +101,8 @@ infixl 5 ***
 (***) :: Regex -> Regex -> Regex
 x   *** Eps = x
 Eps *** y   = y
+_   *** Nil = Nil
+Nil *** _   = Nil
 x   *** y   = Conc x y
 
 -- | Synonym for the @Comp@ constructor
@@ -114,7 +120,7 @@ some = Star
 
 -- | One or more
 many :: Regex -> Regex
-many = (neg Eps <^>) . some
+many r = some r *** r
 
 -- | 1 function
 unit :: Bool -> Regex
@@ -141,6 +147,10 @@ mem e (Star r     ) = undefined
 --          \varnothing \quad & \text{otherwise} \\
 --          \end{cases}
 -- \]
+-- Equivalent to
+-- @
+--      unit . (Eps `mem`)
+-- @
 nu :: Regex -> Regex
 nu (Sym c)       = Nil
 nu Eps           = Eps
@@ -159,7 +169,7 @@ nu (Comp r     ) = unit (nu r == Nil)
 --      u^{-1} L = \left\{ v : uv \in L \right\}
 -- \]
 derive :: String -> Regex -> Regex
-derive s r = foldr deriveSym r s
+derive s r = foldr deriveSym r (reverse s)
 
 -- | Derivative for individual symbols, to fold over
 deriveSym :: Char -> Regex -> Regex
@@ -176,7 +186,7 @@ deriveSym d (Conc r1 r2) =
 -- | Infix @derive@ with regex symbol input
 infixl 4 ^-
 (^-) :: String -> Regex -> Regex
-s ^- r = derive s r
+(^-) = derive
 
 -- * Evaluation and reduction
 
@@ -193,3 +203,4 @@ eval (Union r1 r2) = S.union (eval r1) (eval r2)
 eval (Inter r1 r2) = S.intersection (eval r1) (eval r2)
 eval (Conc r1 r2) =
     S.map (uncurry (<>)) $ S.cartesianProduct (eval r1) (eval r2)
+{-# INLINE eval #-}
