@@ -1,5 +1,7 @@
 {-# LANGUAGE        StandaloneDeriving #-}
 {-# LANGUAGE        OverloadedStrings  #-}
+{-# LANGUAGE        OverloadedLists    #-}
+{-# LANGUAGE        TypeFamilies       #-}
 {-# OPTIONS_HADDOCK NotHome            #-}
 
 {-|
@@ -51,8 +53,9 @@ where
 
 import qualified Data.Set                      as S
 import           Data.String
+import GHC.Exts
 
--- * The Regex type
+-- *  Language definition
 
 -- | A simple regex lang
 data Regex
@@ -96,8 +99,15 @@ instance Monoid Regex where
 
 deriving instance Eq Regex
 
+-- | For use with @OverloadedStrings@
 instance IsString Regex where
     fromString = r
+
+-- | For use with @OverloadedLists@
+instance IsList Regex where
+        type (Item Regex) = String
+        toList = S.toList . eval
+        fromList = foldr1 (<|>) . map r
 
 -- * Regex constructors
 
@@ -126,6 +136,8 @@ x   *** y   = Conc x y
 neg :: Regex -> Regex
 neg = Comp
 
+-- ** Specialized constructors
+
 -- | Treat string as concatenation of symbol regexes
 r :: String -> Regex
 r = foldMap Sym
@@ -148,8 +160,6 @@ many r = some r *** r
 unit :: Bool -> Regex
 unit True  = Eps
 unit False = Nil
-
--- * Set functions
 
 -- | Set membership
 mem :: Regex -> Regex -> Bool
