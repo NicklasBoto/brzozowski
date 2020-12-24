@@ -1,4 +1,6 @@
-{-# LANGUAGE StandaloneDeriving #-}
+{-# LANGUAGE        StandaloneDeriving #-}
+{-# LANGUAGE        OverloadedStrings  #-}
+{-# OPTIONS_HADDOCK NotHome            #-}
 
 {-|
 Module      : Zozo
@@ -9,7 +11,8 @@ Maintainer  : git@nicbot.xyz
 Stability   : experimental
 
 Library for constructing, exploring, and visualizing regular expressions and their
-@NFA@ form. Focusing heavily on the Brzozowski derivative but also Thompson's construction.
+@NFA@ form. Focusing heavily on the Brzozowski derivative
+but also Thompson's construction (eventually).
 -}
 
 module Zozo
@@ -41,10 +44,13 @@ module Zozo
         -- * Evaluation
     , rreduce
     , eval
+    , match
+    , (?)
     )
 where
 
 import qualified Data.Set                      as S
+import           Data.String
 
 -- * The Regex type
 
@@ -73,7 +79,7 @@ data Regex
 instance Show Regex where
     show r = '^' : sw r ++ "$"
       where
-        sw Nil           = "{}"
+        sw Nil           = "∅"
         sw Eps           = "ε"
         sw (Sym c      ) = [c]
         sw (Union r1 r2) = '(' : sw r1 ++ "|" ++ sw r2 ++ ")"
@@ -90,22 +96,25 @@ instance Monoid Regex where
 
 deriving instance Eq Regex
 
+instance IsString Regex where
+    fromString = r
+
 -- * Regex constructors
 
 -- | Synonym for the @Union@ constructor
-infixl 5 <|>
+infixl 6 <|>
 (<|>) :: Regex -> Regex -> Regex
 x   <|> Nil = x
 Nil <|> y   = y
 x   <|> y   = Union x y
 
 -- | Synonym for the @Inter@ constructor
-infixl 5 <^>
+infixl 6 <^>
 (<^>) :: Regex -> Regex -> Regex
 (<^>) = Inter
 
 -- | Synonym for the @Conc@ constructor
-infixl 5 ***
+infixl 6 ***
 (***) :: Regex -> Regex -> Regex
 x   *** Eps = x
 Eps *** y   = y
@@ -197,7 +206,7 @@ deriveSym d (Conc r1 r2) =
     (deriveSym d r1 *** r2) <|> (nu r1 *** deriveSym d r2)
 
 -- | Infix @derive@ with regex symbol input
-infixl 4 ^-
+infixl 5 ^-
 (^-) :: String -> Regex -> Regex
 (^-) = derive
 
@@ -217,3 +226,15 @@ eval (Inter r1 r2) = S.intersection (eval r1) (eval r2)
 eval (Conc r1 r2) =
     S.map (uncurry (<>)) $ S.cartesianProduct (eval r1) (eval r2)
 {-# INLINE eval #-}
+
+-- | Check if regex matches.
+-- Essentially checking if the derivative with respect to a string
+-- is equal to the empty string \(\epsilon\)
+match :: String -> Regex -> Bool
+match s r = s ^- r == Eps
+
+-- TODO maybe change this symbol
+infixl 5 ?
+(?) :: String -> Regex -> Bool
+(?) = match
+-- ^ Infix synonym for @match@ 
