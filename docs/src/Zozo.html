@@ -53,7 +53,7 @@ but also Thompson's construction (eventually).
 </span><span id="line-53"></span><span>
 </span><span id="line-54"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.Set</span></span><span>                      </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">S</span></span><span>
 </span><span id="line-55"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Data.String</span></span><span>
-</span><span id="line-56"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">GHC.Exts</span></span><span>
+</span><span id="line-56"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">GHC.Exts</span></span><span>
 </span><span id="line-57"></span><span>
 </span><span id="line-58"></span><span class="hs-comment">-- *  Language definition</span><span>
 </span><span id="line-59"></span><span>
@@ -590,10 +590,11 @@ forall a b. Set a -&gt; Set b -&gt; Set (a, b)
 </span><span id="line-244"></span><span id="match"><span class="annot"><span class="annottext">match :: String -&gt; Regex -&gt; Bool
 </span><a href="Zozo.html#match"><span class="hs-identifier hs-var hs-var">match</span></a></span></span><span> </span><span id="local-6989586621679049409"><span class="annot"><span class="annottext">s :: String
 </span><a href="#local-6989586621679049409"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span id="local-6989586621679049408"><span class="annot"><span class="annottext">r :: Regex
-</span><a href="#local-6989586621679049408"><span class="hs-identifier hs-var">r</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679049408"><span class="hs-identifier hs-var">r</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Regex -&gt; Regex
+</span><a href="Zozo.html#nu"><span class="hs-identifier hs-var">nu</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">String
 </span><a href="#local-6989586621679049409"><span class="hs-identifier hs-var">s</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; Regex -&gt; Regex
 </span><a href="Zozo.html#%5E-"><span class="hs-operator hs-var">^-</span></a></span><span> </span><span class="annot"><span class="annottext">Regex
-</span><a href="#local-6989586621679049408"><span class="hs-identifier hs-var">r</span></a></span><span> </span><span class="annot"><span class="annottext">Regex -&gt; Regex -&gt; Bool
+</span><a href="#local-6989586621679049408"><span class="hs-identifier hs-var">r</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Regex -&gt; Regex -&gt; Bool
 forall a. Eq a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">Regex
 </span><a href="Zozo.html#Eps"><span class="hs-identifier hs-var">Eps</span></a></span><span>

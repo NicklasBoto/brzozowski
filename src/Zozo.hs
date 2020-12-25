@@ -105,9 +105,9 @@ instance IsString Regex where
 
 -- | For use with @OverloadedLists@
 instance IsList Regex where
-        type (Item Regex) = String
-        toList = S.toList . eval
-        fromList = foldr1 (<|>) . map r
+    type (Item Regex) = String
+    toList   = S.toList . eval
+    fromList = foldr1 (<|>) . map r
 
 -- * Regex constructors
 
@@ -241,7 +241,7 @@ eval (Conc r1 r2) =
 -- Essentially checking if the derivative with respect to a string
 -- is equal to the empty string \(\epsilon\)
 match :: String -> Regex -> Bool
-match s r = s ^- r == Eps
+match s r = nu (s ^- r) == Eps
 
 -- TODO maybe change this symbol
 infixl 5 ?
