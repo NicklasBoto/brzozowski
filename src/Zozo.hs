@@ -2,6 +2,7 @@
 {-# LANGUAGE        OverloadedStrings  #-}
 {-# LANGUAGE        OverloadedLists    #-}
 {-# LANGUAGE        TypeFamilies       #-}
+{-# LANGUAGE        Trustworthy        #-}
 {-# OPTIONS_HADDOCK NotHome            #-}
 
 {-|
@@ -53,7 +54,11 @@ where
 
 import qualified Data.Set                      as S
 import           Data.String
-import           GHC.Exts
+import           GHC.Exts                       ( IsList
+                                                , Item
+                                                , toList
+                                                , fromList
+                                                )
 
 -- *  Language definition
 
