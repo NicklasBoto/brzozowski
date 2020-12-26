@@ -158,6 +158,7 @@ neg = Comp
 
 -- | Language set difference
 -- \[ \Lambda \backslash \Gamma \hspace{10pt} \Lambda,\Gamma \subseteq \Sigma^* \]
+infixl 6 \\
 (\\) :: Regex -> Regex -> Regex
 r1 \\ r2 = r1 <^> neg r2
 
