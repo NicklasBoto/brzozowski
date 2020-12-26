@@ -51,9 +51,10 @@ module Zozo
     , eval
     , match
     , (?)
+    ,
 
         -- * Regex sets
-    , alpha
+      alpha
     , numeric
     , alphaNum
     , space
@@ -123,7 +124,7 @@ instance IsString Regex where
 instance IsList Regex where
     type (Item Regex) = String
     toList   = S.toList . eval
-    fromList = foldr1 (<|>) . map r
+    fromList = foldr ((<|>) . r) Nil
 
 -- * Regex constructors
 
