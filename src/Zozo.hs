@@ -29,12 +29,14 @@ module Zozo
     , (<^>)
     , (***)
     , neg
+    , (\\)
     ,
 
         -- ** Specialized constructors
       r
     , some
     , many
+    , alphabet
     , unit
     , nu
     ,
@@ -49,6 +51,15 @@ module Zozo
     , eval
     , match
     , (?)
+
+        -- * Regex sets
+    , alpha
+    , numeric
+    , alphaNum
+    , space
+    , spaces
+    , whiteSpace
+    , anyChar
     )
 where
 
@@ -121,12 +132,16 @@ infixl 6 <|>
 (<|>) :: Regex -> Regex -> Regex
 x   <|> Nil = x
 Nil <|> y   = y
-x   <|> y   = Union x y
+x <|> y | x == y    = x
+        | otherwise = Union x y
 
 -- | Synonym for the @Inter@ constructor
 infixl 6 <^>
 (<^>) :: Regex -> Regex -> Regex
-(<^>) = Inter
+Nil <^> _   = Nil
+_   <^> Nil = Nil
+x <^> y | x == y    = x
+        | otherwise = Inter x y
 
 -- | Synonym for the @Conc@ constructor
 infixl 6 ***
@@ -141,9 +156,18 @@ x   *** y   = Conc x y
 neg :: Regex -> Regex
 neg = Comp
 
+-- | Language set difference
+-- \[ \Lambda \backslash \Gamma \hspace{10pt} \Lambda,\Gamma \subseteq \Sigma^* \]
+(\\) :: Regex -> Regex -> Regex
+r1 \\ r2 = r1 <^> neg r2
+
 -- ** Specialized constructors
 
 -- | Treat string as concatenation of symbol regexes
+--
+-- @
+--      r"foo"
+-- @
 r :: String -> Regex
 r = foldMap Sym
 
@@ -155,6 +179,14 @@ some = Star
 -- | One or more
 many :: Regex -> Regex
 many r = some r *** r
+
+-- | Fold string over language union
+--
+-- @
+--      numericChar = alphabet ['0'..'9']
+-- @
+alphabet :: String -> Regex
+alphabet = foldr1 (<|>) . map Sym
 
 -- | \[
 -- \mathbb{1}_x = \begin{cases}
@@ -235,7 +267,8 @@ rreduce s = until normal (s ^-) where normal x = derive s x == x
 eval :: Regex -> S.Set String
 eval Nil           = S.empty
 eval Eps           = S.singleton ""
-eval (Sym c      ) = S.singleton [c]
+eval (Sym  c     ) = S.singleton [c]
+eval (Star r     ) = S.singleton $ show r ++ "*"
 eval (Union r1 r2) = S.union (eval r1) (eval r2)
 eval (Inter r1 r2) = S.intersection (eval r1) (eval r2)
 eval (Conc r1 r2) =
@@ -253,3 +286,33 @@ infixl 5 ?
 (?) :: String -> Regex -> Bool
 (?) = match
 -- ^ Infix synonym for @match@ 
+
+-- * Regex sets
+
+-- | Alphabetic characters
+alpha :: Regex
+alpha = alphabet $ ['a' .. 'z'] ++ ['A' .. 'Z']
+
+-- | Numeric characters
+numeric :: Regex
+numeric = alphabet ['0' .. '9']
+
+-- | Alpha-numeric characters
+alphaNum :: Regex
+alphaNum = alpha <|> numeric
+
+-- | Single space character
+space :: Regex
+space = " "
+
+-- | One or more spaces
+spaces :: Regex
+spaces = many space
+
+-- | Any whitespace character 
+whiteSpace :: Regex
+whiteSpace = [" ", "\n", "\t"]
+
+-- | Any ASCII character
+anyChar :: Regex
+anyChar = alphabet ['\NUL' .. '\127']
