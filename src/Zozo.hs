@@ -99,14 +99,15 @@ data Regex
 instance Show Regex where
     show r = '^' : sw r ++ "$"
       where
-        sw Nil           = "∅"
-        sw Eps           = "ε"
-        sw (Sym c      ) = [c]
-        sw (Union r1 r2) = '(' : sw r1 ++ "|" ++ sw r2 ++ ")"
-        sw (Inter r1 r2) = '(' : sw r1 ++ "^" ++ sw r2 ++ ")"
-        sw (Conc  r1 r2) = sw r1 ++ sw r2
-        sw (Comp r     ) = "~(" ++ sw r ++ ")"
-        sw (Star r     ) = '(' : sw r ++ ")*"
+        sw x | x == anyChar = "."
+        sw Nil              = "∅"
+        sw Eps              = "ε"
+        sw (Sym c      )    = [c]
+        sw (Union r1 r2)    = '(' : sw r1 ++ "|" ++ sw r2 ++ ")"
+        sw (Inter r1 r2)    = '(' : sw r1 ++ "^" ++ sw r2 ++ ")"
+        sw (Conc  r1 r2)    = sw r1 ++ sw r2
+        sw (Comp r     )    = "~(" ++ sw r ++ ")"
+        sw (Star r     )    = '(' : sw r ++ ")*"
 
 instance Semigroup Regex where
     (<>) = (***)
