@@ -42,7 +42,7 @@ module Zozo
     ,
 
         -- * Derivatives
-    , derive
+      derive
     , (^-)
 
         -- * Evaluation

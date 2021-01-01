@@ -42,162 +42,161 @@ but also Thompson's construction (eventually).
 </span><span id="line-42"></span><span>    </span><span class="hs-special">,</span><span>
 </span><span id="line-43"></span><span>
 </span><span id="line-44"></span><span>        </span><span class="annot"><span class="hs-comment">-- * Derivatives</span></span><span>
-</span><span id="line-45"></span><span>      </span><span class="annot"><a href="Zozo.html#mem"><span class="hs-identifier">mem</span></a></span><span>
-</span><span id="line-46"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Zozo.html#derive"><span class="hs-identifier">derive</span></a></span><span>
-</span><span id="line-47"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Zozo.html#%5E-"><span class="hs-operator">(^-)</span></a></span><span>
-</span><span id="line-48"></span><span>
-</span><span id="line-49"></span><span>        </span><span class="annot"><span class="hs-comment">-- * Evaluation</span></span><span>
-</span><span id="line-50"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Zozo.html#rreduce"><span class="hs-identifier">rreduce</span></a></span><span>
-</span><span id="line-51"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Zozo.html#eval"><span class="hs-identifier">eval</span></a></span><span>
-</span><span id="line-52"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Zozo.html#match"><span class="hs-identifier">match</span></a></span><span>
-</span><span id="line-53"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Zozo.html#%3F"><span class="hs-operator">(?)</span></a></span><span>
-</span><span id="line-54"></span><span>    </span><span class="hs-special">,</span><span>
-</span><span id="line-55"></span><span>
-</span><span id="line-56"></span><span>        </span><span class="annot"><span class="hs-comment">-- * Regex sets</span></span><span>
-</span><span id="line-57"></span><span>      </span><span class="annot"><a href="Zozo.html#alpha"><span class="hs-identifier">alpha</span></a></span><span>
-</span><span id="line-58"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Zozo.html#numeric"><span class="hs-identifier">numeric</span></a></span><span>
-</span><span id="line-59"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Zozo.html#alphaNum"><span class="hs-identifier">alphaNum</span></a></span><span>
-</span><span id="line-60"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Zozo.html#space"><span class="hs-identifier">space</span></a></span><span>
-</span><span id="line-61"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Zozo.html#spaces"><span class="hs-identifier">spaces</span></a></span><span>
-</span><span id="line-62"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Zozo.html#whiteSpace"><span class="hs-identifier">whiteSpace</span></a></span><span>
-</span><span id="line-63"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Zozo.html#anyChar"><span class="hs-identifier">anyChar</span></a></span><span>
-</span><span id="line-64"></span><span>    </span><span class="hs-special">)</span><span>
-</span><span id="line-65"></span><span class="hs-keyword">where</span><span>
-</span><span id="line-66"></span><span>
-</span><span id="line-67"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.Set</span></span><span>                      </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">S</span></span><span>
-</span><span id="line-68"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Data.String</span></span><span>
-</span><span id="line-69"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">GHC.Exts</span></span><span>                       </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-identifier">IsList</span></span><span>
-</span><span id="line-70"></span><span>                                                </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">Item</span></span><span>
-</span><span id="line-71"></span><span>                                                </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">toList</span></span><span>
-</span><span id="line-72"></span><span>                                                </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">fromList</span></span><span>
-</span><span id="line-73"></span><span>                                                </span><span class="hs-special">)</span><span>
-</span><span id="line-74"></span><span>
-</span><span id="line-75"></span><span class="hs-comment">-- *  Language definition</span><span>
-</span><span id="line-76"></span><span>
-</span><span id="line-77"></span><span class="hs-comment">-- | A simple regex lang</span><span>
-</span><span id="line-78"></span><span class="hs-keyword">data</span><span> </span><span id="Regex"><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-var">Regex</span></a></span></span><span>
-</span><span id="line-79"></span><span>        </span><span class="hs-comment">-- | The empty set</span><span>
-</span><span id="line-80"></span><span>        </span><span class="hs-glyph">=</span><span> </span><span id="Nil"><span class="annot"><a href="Zozo.html#Nil"><span class="hs-identifier hs-var">Nil</span></a></span></span><span>
-</span><span id="line-81"></span><span>        </span><span class="hs-comment">-- | The empty string, \( \epsilon \)</span><span>
-</span><span id="line-82"></span><span>        </span><span class="hs-glyph">|</span><span> </span><span id="Eps"><span class="annot"><a href="Zozo.html#Eps"><span class="hs-identifier hs-var">Eps</span></a></span></span><span>
-</span><span id="line-83"></span><span>        </span><span class="hs-comment">-- | A symbol as a singleton set</span><span>
-</span><span id="line-84"></span><span>        </span><span class="hs-glyph">|</span><span> </span><span id="Sym"><span class="annot"><a href="Zozo.html#Sym"><span class="hs-identifier hs-var">Sym</span></a></span></span><span>   </span><span class="annot"><span class="hs-identifier hs-type">Char</span></span><span>
-</span><span id="line-85"></span><span>        </span><span class="hs-comment">-- | Union of language sets</span><span>
-</span><span id="line-86"></span><span>        </span><span class="hs-comment">-- \[ \Lambda \vee \Gamma \hspace{10pt} \Lambda,\Gamma \subseteq \Sigma^* \]</span><span>
-</span><span id="line-87"></span><span>        </span><span class="hs-glyph">|</span><span> </span><span id="Union"><span class="annot"><a href="Zozo.html#Union"><span class="hs-identifier hs-var">Union</span></a></span></span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span>
-</span><span id="line-88"></span><span>        </span><span class="hs-comment">-- | Intercept of language sets</span><span>
-</span><span id="line-89"></span><span>        </span><span class="hs-comment">-- \[ \Lambda \wedge \Gamma \hspace{10pt} \Lambda,\Gamma \subseteq \Sigma^* \]</span><span>
-</span><span id="line-90"></span><span>        </span><span class="hs-glyph">|</span><span> </span><span id="Inter"><span class="annot"><a href="Zozo.html#Inter"><span class="hs-identifier hs-var">Inter</span></a></span></span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span>
-</span><span id="line-91"></span><span>        </span><span class="hs-comment">-- | Complement of language sets</span><span>
-</span><span id="line-92"></span><span>        </span><span class="hs-comment">-- \[ \neg \Gamma \hspace{10pt} \Gamma \subseteq \Sigma^* \]</span><span>
-</span><span id="line-93"></span><span>        </span><span class="hs-glyph">|</span><span> </span><span id="Comp"><span class="annot"><a href="Zozo.html#Comp"><span class="hs-identifier hs-var">Comp</span></a></span></span><span>  </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span>
-</span><span id="line-94"></span><span>        </span><span class="hs-comment">-- | All possible concatenations</span><span>
-</span><span id="line-95"></span><span>        </span><span class="hs-glyph">|</span><span> </span><span id="Conc"><span class="annot"><a href="Zozo.html#Conc"><span class="hs-identifier hs-var">Conc</span></a></span></span><span>  </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span>
-</span><span id="line-96"></span><span>        </span><span class="hs-comment">-- | [Kleene star operator](https://en.wikipedia.org/wiki/Kleene_star)</span><span>
-</span><span id="line-97"></span><span>        </span><span class="hs-glyph">|</span><span> </span><span id="Star"><span class="annot"><a href="Zozo.html#Star"><span class="hs-identifier hs-var">Star</span></a></span></span><span>  </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span>
-</span><span id="line-98"></span><span>
-</span><span id="line-99"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679049693"><span id="local-6989586621679049696"><span class="annot"><span class="hs-identifier hs-type">Show</span></span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-100"></span><span>    </span><span id="local-6989586621679049691"><span class="annot"><span class="annottext">show :: Regex -&gt; String
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">show</span></span></span><span> </span><span id="local-6989586621679049689"><span class="annot"><span class="annottext">r :: Regex
-</span><a href="#local-6989586621679049689"><span class="hs-identifier hs-var">r</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-char">'^'</span></span><span> </span><span class="annot"><span class="annottext">Char -&gt; ShowS
+</span><span id="line-45"></span><span>      </span><span class="annot"><a href="Zozo.html#derive"><span class="hs-identifier">derive</span></a></span><span>
+</span><span id="line-46"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Zozo.html#%5E-"><span class="hs-operator">(^-)</span></a></span><span>
+</span><span id="line-47"></span><span>
+</span><span id="line-48"></span><span>        </span><span class="annot"><span class="hs-comment">-- * Evaluation</span></span><span>
+</span><span id="line-49"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Zozo.html#rreduce"><span class="hs-identifier">rreduce</span></a></span><span>
+</span><span id="line-50"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Zozo.html#eval"><span class="hs-identifier">eval</span></a></span><span>
+</span><span id="line-51"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Zozo.html#match"><span class="hs-identifier">match</span></a></span><span>
+</span><span id="line-52"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Zozo.html#%3F"><span class="hs-operator">(?)</span></a></span><span>
+</span><span id="line-53"></span><span>    </span><span class="hs-special">,</span><span>
+</span><span id="line-54"></span><span>
+</span><span id="line-55"></span><span>        </span><span class="annot"><span class="hs-comment">-- * Regex sets</span></span><span>
+</span><span id="line-56"></span><span>      </span><span class="annot"><a href="Zozo.html#alpha"><span class="hs-identifier">alpha</span></a></span><span>
+</span><span id="line-57"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Zozo.html#numeric"><span class="hs-identifier">numeric</span></a></span><span>
+</span><span id="line-58"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Zozo.html#alphaNum"><span class="hs-identifier">alphaNum</span></a></span><span>
+</span><span id="line-59"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Zozo.html#space"><span class="hs-identifier">space</span></a></span><span>
+</span><span id="line-60"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Zozo.html#spaces"><span class="hs-identifier">spaces</span></a></span><span>
+</span><span id="line-61"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Zozo.html#whiteSpace"><span class="hs-identifier">whiteSpace</span></a></span><span>
+</span><span id="line-62"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Zozo.html#anyChar"><span class="hs-identifier">anyChar</span></a></span><span>
+</span><span id="line-63"></span><span>    </span><span class="hs-special">)</span><span>
+</span><span id="line-64"></span><span class="hs-keyword">where</span><span>
+</span><span id="line-65"></span><span>
+</span><span id="line-66"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.Set</span></span><span>                      </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">S</span></span><span>
+</span><span id="line-67"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Data.String</span></span><span>
+</span><span id="line-68"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">GHC.Exts</span></span><span>                       </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-identifier">IsList</span></span><span>
+</span><span id="line-69"></span><span>                                                </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">Item</span></span><span>
+</span><span id="line-70"></span><span>                                                </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">toList</span></span><span>
+</span><span id="line-71"></span><span>                                                </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">fromList</span></span><span>
+</span><span id="line-72"></span><span>                                                </span><span class="hs-special">)</span><span>
+</span><span id="line-73"></span><span>
+</span><span id="line-74"></span><span class="hs-comment">-- *  Language definition</span><span>
+</span><span id="line-75"></span><span>
+</span><span id="line-76"></span><span class="hs-comment">-- | A simple regex lang</span><span>
+</span><span id="line-77"></span><span class="hs-keyword">data</span><span> </span><span id="Regex"><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-var">Regex</span></a></span></span><span>
+</span><span id="line-78"></span><span>        </span><span class="hs-comment">-- | The empty set</span><span>
+</span><span id="line-79"></span><span>        </span><span class="hs-glyph">=</span><span> </span><span id="Nil"><span class="annot"><a href="Zozo.html#Nil"><span class="hs-identifier hs-var">Nil</span></a></span></span><span>
+</span><span id="line-80"></span><span>        </span><span class="hs-comment">-- | The empty string, \( \epsilon \)</span><span>
+</span><span id="line-81"></span><span>        </span><span class="hs-glyph">|</span><span> </span><span id="Eps"><span class="annot"><a href="Zozo.html#Eps"><span class="hs-identifier hs-var">Eps</span></a></span></span><span>
+</span><span id="line-82"></span><span>        </span><span class="hs-comment">-- | A symbol as a singleton set</span><span>
+</span><span id="line-83"></span><span>        </span><span class="hs-glyph">|</span><span> </span><span id="Sym"><span class="annot"><a href="Zozo.html#Sym"><span class="hs-identifier hs-var">Sym</span></a></span></span><span>   </span><span class="annot"><span class="hs-identifier hs-type">Char</span></span><span>
+</span><span id="line-84"></span><span>        </span><span class="hs-comment">-- | Union of language sets</span><span>
+</span><span id="line-85"></span><span>        </span><span class="hs-comment">-- \[ \Lambda \vee \Gamma \hspace{10pt} \Lambda,\Gamma \subseteq \Sigma^* \]</span><span>
+</span><span id="line-86"></span><span>        </span><span class="hs-glyph">|</span><span> </span><span id="Union"><span class="annot"><a href="Zozo.html#Union"><span class="hs-identifier hs-var">Union</span></a></span></span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span>
+</span><span id="line-87"></span><span>        </span><span class="hs-comment">-- | Intercept of language sets</span><span>
+</span><span id="line-88"></span><span>        </span><span class="hs-comment">-- \[ \Lambda \wedge \Gamma \hspace{10pt} \Lambda,\Gamma \subseteq \Sigma^* \]</span><span>
+</span><span id="line-89"></span><span>        </span><span class="hs-glyph">|</span><span> </span><span id="Inter"><span class="annot"><a href="Zozo.html#Inter"><span class="hs-identifier hs-var">Inter</span></a></span></span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span>
+</span><span id="line-90"></span><span>        </span><span class="hs-comment">-- | Complement of language sets</span><span>
+</span><span id="line-91"></span><span>        </span><span class="hs-comment">-- \[ \neg \Gamma \hspace{10pt} \Gamma \subseteq \Sigma^* \]</span><span>
+</span><span id="line-92"></span><span>        </span><span class="hs-glyph">|</span><span> </span><span id="Comp"><span class="annot"><a href="Zozo.html#Comp"><span class="hs-identifier hs-var">Comp</span></a></span></span><span>  </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span>
+</span><span id="line-93"></span><span>        </span><span class="hs-comment">-- | All possible concatenations</span><span>
+</span><span id="line-94"></span><span>        </span><span class="hs-glyph">|</span><span> </span><span id="Conc"><span class="annot"><a href="Zozo.html#Conc"><span class="hs-identifier hs-var">Conc</span></a></span></span><span>  </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span>
+</span><span id="line-95"></span><span>        </span><span class="hs-comment">-- | [Kleene star operator](https://en.wikipedia.org/wiki/Kleene_star)</span><span>
+</span><span id="line-96"></span><span>        </span><span class="hs-glyph">|</span><span> </span><span id="Star"><span class="annot"><a href="Zozo.html#Star"><span class="hs-identifier hs-var">Star</span></a></span></span><span>  </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span>
+</span><span id="line-97"></span><span>
+</span><span id="line-98"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679049694"><span id="local-6989586621679049697"><span class="annot"><span class="hs-identifier hs-type">Show</span></span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-99"></span><span>    </span><span id="local-6989586621679049692"><span class="annot"><span class="annottext">show :: Regex -&gt; String
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">show</span></span></span><span> </span><span id="local-6989586621679049690"><span class="annot"><span class="annottext">r :: Regex
+</span><a href="#local-6989586621679049690"><span class="hs-identifier hs-var">r</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-char">'^'</span></span><span> </span><span class="annot"><span class="annottext">Char -&gt; ShowS
 forall a. a -&gt; [a] -&gt; [a]
 </span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">Regex -&gt; String
-</span><a href="#local-6989586621679049688"><span class="hs-identifier hs-var">sw</span></a></span><span> </span><span class="annot"><span class="annottext">Regex
-</span><a href="#local-6989586621679049689"><span class="hs-identifier hs-var">r</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
+</span><a href="#local-6989586621679049689"><span class="hs-identifier hs-var">sw</span></a></span><span> </span><span class="annot"><span class="annottext">Regex
+</span><a href="#local-6989586621679049690"><span class="hs-identifier hs-var">r</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
 forall a. [a] -&gt; [a] -&gt; [a]
 </span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="hs-string">&quot;$&quot;</span></span><span>
-</span><span id="line-101"></span><span>      </span><span class="hs-keyword">where</span><span>
-</span><span id="line-102"></span><span>        </span><span id="local-6989586621679049688"><span class="annot"><span class="annottext">sw :: Regex -&gt; String
-</span><a href="#local-6989586621679049688"><span class="hs-identifier hs-var hs-var">sw</span></a></span></span><span> </span><span id="local-6989586621679049687"><span class="annot"><span class="annottext">x :: Regex
-</span><a href="#local-6989586621679049687"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Regex
-</span><a href="#local-6989586621679049687"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Regex -&gt; Regex -&gt; Bool
+</span><span id="line-100"></span><span>      </span><span class="hs-keyword">where</span><span>
+</span><span id="line-101"></span><span>        </span><span id="local-6989586621679049689"><span class="annot"><span class="annottext">sw :: Regex -&gt; String
+</span><a href="#local-6989586621679049689"><span class="hs-identifier hs-var hs-var">sw</span></a></span></span><span> </span><span id="local-6989586621679049688"><span class="annot"><span class="annottext">x :: Regex
+</span><a href="#local-6989586621679049688"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Regex
+</span><a href="#local-6989586621679049688"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Regex -&gt; Regex -&gt; Bool
 forall a. Eq a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">Regex
 </span><a href="Zozo.html#anyChar"><span class="hs-identifier hs-var">anyChar</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-string">&quot;.&quot;</span></span><span>
-</span><span id="line-103"></span><span>        </span><span class="annot"><a href="#local-6989586621679049688"><span class="hs-identifier hs-var">sw</span></a></span><span> </span><span class="annot"><a href="Zozo.html#Nil"><span class="hs-identifier hs-type">Nil</span></a></span><span>              </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-string">&quot;&#8709;&quot;</span></span><span>
-</span><span id="line-104"></span><span>        </span><span class="annot"><a href="#local-6989586621679049688"><span class="hs-identifier hs-var">sw</span></a></span><span> </span><span class="annot"><a href="Zozo.html#Eps"><span class="hs-identifier hs-type">Eps</span></a></span><span>              </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-string">&quot;&#949;&quot;</span></span><span>
-</span><span id="line-105"></span><span>        </span><span class="annot"><a href="#local-6989586621679049688"><span class="hs-identifier hs-var">sw</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Zozo.html#Sym"><span class="hs-identifier hs-type">Sym</span></a></span><span> </span><span id="local-6989586621679049686"><span class="annot"><span class="annottext">c :: Char
-</span><a href="#local-6989586621679049686"><span class="hs-identifier hs-var">c</span></a></span></span><span>      </span><span class="hs-special">)</span><span>    </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Char
+</span><span id="line-102"></span><span>        </span><span class="annot"><a href="#local-6989586621679049689"><span class="hs-identifier hs-var">sw</span></a></span><span> </span><span class="annot"><a href="Zozo.html#Nil"><span class="hs-identifier hs-type">Nil</span></a></span><span>              </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-string">&quot;&#8709;&quot;</span></span><span>
+</span><span id="line-103"></span><span>        </span><span class="annot"><a href="#local-6989586621679049689"><span class="hs-identifier hs-var">sw</span></a></span><span> </span><span class="annot"><a href="Zozo.html#Eps"><span class="hs-identifier hs-type">Eps</span></a></span><span>              </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-string">&quot;&#949;&quot;</span></span><span>
+</span><span id="line-104"></span><span>        </span><span class="annot"><a href="#local-6989586621679049689"><span class="hs-identifier hs-var">sw</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Zozo.html#Sym"><span class="hs-identifier hs-type">Sym</span></a></span><span> </span><span id="local-6989586621679049687"><span class="annot"><span class="annottext">c :: Char
+</span><a href="#local-6989586621679049687"><span class="hs-identifier hs-var">c</span></a></span></span><span>      </span><span class="hs-special">)</span><span>    </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Char
 Item String
-</span><a href="#local-6989586621679049686"><span class="hs-identifier hs-var">c</span></a></span><span class="hs-special">]</span><span>
-</span><span id="line-106"></span><span>        </span><span class="annot"><a href="#local-6989586621679049688"><span class="hs-identifier hs-var">sw</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Zozo.html#Union"><span class="hs-identifier hs-type">Union</span></a></span><span> </span><span id="local-6989586621679049685"><span class="annot"><span class="annottext">r1 :: Regex
-</span><a href="#local-6989586621679049685"><span class="hs-identifier hs-var">r1</span></a></span></span><span> </span><span id="local-6989586621679049684"><span class="annot"><span class="annottext">r2 :: Regex
-</span><a href="#local-6989586621679049684"><span class="hs-identifier hs-var">r2</span></a></span></span><span class="hs-special">)</span><span>    </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-char">'('</span></span><span> </span><span class="annot"><span class="annottext">Char -&gt; ShowS
+</span><a href="#local-6989586621679049687"><span class="hs-identifier hs-var">c</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-105"></span><span>        </span><span class="annot"><a href="#local-6989586621679049689"><span class="hs-identifier hs-var">sw</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Zozo.html#Union"><span class="hs-identifier hs-type">Union</span></a></span><span> </span><span id="local-6989586621679049686"><span class="annot"><span class="annottext">r1 :: Regex
+</span><a href="#local-6989586621679049686"><span class="hs-identifier hs-var">r1</span></a></span></span><span> </span><span id="local-6989586621679049685"><span class="annot"><span class="annottext">r2 :: Regex
+</span><a href="#local-6989586621679049685"><span class="hs-identifier hs-var">r2</span></a></span></span><span class="hs-special">)</span><span>    </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-char">'('</span></span><span> </span><span class="annot"><span class="annottext">Char -&gt; ShowS
 forall a. a -&gt; [a] -&gt; [a]
 </span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">Regex -&gt; String
-</span><a href="#local-6989586621679049688"><span class="hs-identifier hs-var">sw</span></a></span><span> </span><span class="annot"><span class="annottext">Regex
-</span><a href="#local-6989586621679049685"><span class="hs-identifier hs-var">r1</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
+</span><a href="#local-6989586621679049689"><span class="hs-identifier hs-var">sw</span></a></span><span> </span><span class="annot"><span class="annottext">Regex
+</span><a href="#local-6989586621679049686"><span class="hs-identifier hs-var">r1</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
 forall a. [a] -&gt; [a] -&gt; [a]
 </span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="hs-string">&quot;|&quot;</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
 forall a. [a] -&gt; [a] -&gt; [a]
 </span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">Regex -&gt; String
-</span><a href="#local-6989586621679049688"><span class="hs-identifier hs-var">sw</span></a></span><span> </span><span class="annot"><span class="annottext">Regex
-</span><a href="#local-6989586621679049684"><span class="hs-identifier hs-var">r2</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
+</span><a href="#local-6989586621679049689"><span class="hs-identifier hs-var">sw</span></a></span><span> </span><span class="annot"><span class="annottext">Regex
+</span><a href="#local-6989586621679049685"><span class="hs-identifier hs-var">r2</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
 forall a. [a] -&gt; [a] -&gt; [a]
 </span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="hs-string">&quot;)&quot;</span></span><span>
-</span><span id="line-107"></span><span>        </span><span class="annot"><a href="#local-6989586621679049688"><span class="hs-identifier hs-var">sw</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Zozo.html#Inter"><span class="hs-identifier hs-type">Inter</span></a></span><span> </span><span id="local-6989586621679049683"><span class="annot"><span class="annottext">r1 :: Regex
-</span><a href="#local-6989586621679049683"><span class="hs-identifier hs-var">r1</span></a></span></span><span> </span><span id="local-6989586621679049682"><span class="annot"><span class="annottext">r2 :: Regex
-</span><a href="#local-6989586621679049682"><span class="hs-identifier hs-var">r2</span></a></span></span><span class="hs-special">)</span><span>    </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-char">'('</span></span><span> </span><span class="annot"><span class="annottext">Char -&gt; ShowS
+</span><span id="line-106"></span><span>        </span><span class="annot"><a href="#local-6989586621679049689"><span class="hs-identifier hs-var">sw</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Zozo.html#Inter"><span class="hs-identifier hs-type">Inter</span></a></span><span> </span><span id="local-6989586621679049684"><span class="annot"><span class="annottext">r1 :: Regex
+</span><a href="#local-6989586621679049684"><span class="hs-identifier hs-var">r1</span></a></span></span><span> </span><span id="local-6989586621679049683"><span class="annot"><span class="annottext">r2 :: Regex
+</span><a href="#local-6989586621679049683"><span class="hs-identifier hs-var">r2</span></a></span></span><span class="hs-special">)</span><span>    </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-char">'('</span></span><span> </span><span class="annot"><span class="annottext">Char -&gt; ShowS
 forall a. a -&gt; [a] -&gt; [a]
 </span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">Regex -&gt; String
-</span><a href="#local-6989586621679049688"><span class="hs-identifier hs-var">sw</span></a></span><span> </span><span class="annot"><span class="annottext">Regex
-</span><a href="#local-6989586621679049683"><span class="hs-identifier hs-var">r1</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
+</span><a href="#local-6989586621679049689"><span class="hs-identifier hs-var">sw</span></a></span><span> </span><span class="annot"><span class="annottext">Regex
+</span><a href="#local-6989586621679049684"><span class="hs-identifier hs-var">r1</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
 forall a. [a] -&gt; [a] -&gt; [a]
 </span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="hs-string">&quot;^&quot;</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
 forall a. [a] -&gt; [a] -&gt; [a]
 </span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">Regex -&gt; String
-</span><a href="#local-6989586621679049688"><span class="hs-identifier hs-var">sw</span></a></span><span> </span><span class="annot"><span class="annottext">Regex
-</span><a href="#local-6989586621679049682"><span class="hs-identifier hs-var">r2</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
+</span><a href="#local-6989586621679049689"><span class="hs-identifier hs-var">sw</span></a></span><span> </span><span class="annot"><span class="annottext">Regex
+</span><a href="#local-6989586621679049683"><span class="hs-identifier hs-var">r2</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
 forall a. [a] -&gt; [a] -&gt; [a]
 </span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="hs-string">&quot;)&quot;</span></span><span>
-</span><span id="line-108"></span><span>        </span><span class="annot"><a href="#local-6989586621679049688"><span class="hs-identifier hs-var">sw</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Zozo.html#Conc"><span class="hs-identifier hs-type">Conc</span></a></span><span>  </span><span id="local-6989586621679049681"><span class="annot"><span class="annottext">r1 :: Regex
-</span><a href="#local-6989586621679049681"><span class="hs-identifier hs-var">r1</span></a></span></span><span> </span><span id="local-6989586621679049680"><span class="annot"><span class="annottext">r2 :: Regex
-</span><a href="#local-6989586621679049680"><span class="hs-identifier hs-var">r2</span></a></span></span><span class="hs-special">)</span><span>    </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Regex -&gt; String
-</span><a href="#local-6989586621679049688"><span class="hs-identifier hs-var">sw</span></a></span><span> </span><span class="annot"><span class="annottext">Regex
-</span><a href="#local-6989586621679049681"><span class="hs-identifier hs-var">r1</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
+</span><span id="line-107"></span><span>        </span><span class="annot"><a href="#local-6989586621679049689"><span class="hs-identifier hs-var">sw</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Zozo.html#Conc"><span class="hs-identifier hs-type">Conc</span></a></span><span>  </span><span id="local-6989586621679049682"><span class="annot"><span class="annottext">r1 :: Regex
+</span><a href="#local-6989586621679049682"><span class="hs-identifier hs-var">r1</span></a></span></span><span> </span><span id="local-6989586621679049681"><span class="annot"><span class="annottext">r2 :: Regex
+</span><a href="#local-6989586621679049681"><span class="hs-identifier hs-var">r2</span></a></span></span><span class="hs-special">)</span><span>    </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Regex -&gt; String
+</span><a href="#local-6989586621679049689"><span class="hs-identifier hs-var">sw</span></a></span><span> </span><span class="annot"><span class="annottext">Regex
+</span><a href="#local-6989586621679049682"><span class="hs-identifier hs-var">r1</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
 forall a. [a] -&gt; [a] -&gt; [a]
 </span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">Regex -&gt; String
-</span><a href="#local-6989586621679049688"><span class="hs-identifier hs-var">sw</span></a></span><span> </span><span class="annot"><span class="annottext">Regex
-</span><a href="#local-6989586621679049680"><span class="hs-identifier hs-var">r2</span></a></span><span>
-</span><span id="line-109"></span><span>        </span><span class="annot"><a href="#local-6989586621679049688"><span class="hs-identifier hs-var">sw</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Zozo.html#Comp"><span class="hs-identifier hs-type">Comp</span></a></span><span> </span><span id="local-6989586621679049679"><span class="annot"><span class="annottext">r :: Regex
-</span><a href="#local-6989586621679049679"><span class="hs-identifier hs-var">r</span></a></span></span><span>     </span><span class="hs-special">)</span><span>    </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-string">&quot;~(&quot;</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
+</span><a href="#local-6989586621679049689"><span class="hs-identifier hs-var">sw</span></a></span><span> </span><span class="annot"><span class="annottext">Regex
+</span><a href="#local-6989586621679049681"><span class="hs-identifier hs-var">r2</span></a></span><span>
+</span><span id="line-108"></span><span>        </span><span class="annot"><a href="#local-6989586621679049689"><span class="hs-identifier hs-var">sw</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Zozo.html#Comp"><span class="hs-identifier hs-type">Comp</span></a></span><span> </span><span id="local-6989586621679049680"><span class="annot"><span class="annottext">r :: Regex
+</span><a href="#local-6989586621679049680"><span class="hs-identifier hs-var">r</span></a></span></span><span>     </span><span class="hs-special">)</span><span>    </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-string">&quot;~(&quot;</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
 forall a. [a] -&gt; [a] -&gt; [a]
 </span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">Regex -&gt; String
-</span><a href="#local-6989586621679049688"><span class="hs-identifier hs-var">sw</span></a></span><span> </span><span class="annot"><span class="annottext">Regex
-</span><a href="#local-6989586621679049679"><span class="hs-identifier hs-var">r</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
+</span><a href="#local-6989586621679049689"><span class="hs-identifier hs-var">sw</span></a></span><span> </span><span class="annot"><span class="annottext">Regex
+</span><a href="#local-6989586621679049680"><span class="hs-identifier hs-var">r</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
 forall a. [a] -&gt; [a] -&gt; [a]
 </span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="hs-string">&quot;)&quot;</span></span><span>
-</span><span id="line-110"></span><span>        </span><span class="annot"><a href="#local-6989586621679049688"><span class="hs-identifier hs-var">sw</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Zozo.html#Star"><span class="hs-identifier hs-type">Star</span></a></span><span> </span><span id="local-6989586621679049678"><span class="annot"><span class="annottext">r :: Regex
-</span><a href="#local-6989586621679049678"><span class="hs-identifier hs-var">r</span></a></span></span><span>     </span><span class="hs-special">)</span><span>    </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-char">'('</span></span><span> </span><span class="annot"><span class="annottext">Char -&gt; ShowS
+</span><span id="line-109"></span><span>        </span><span class="annot"><a href="#local-6989586621679049689"><span class="hs-identifier hs-var">sw</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Zozo.html#Star"><span class="hs-identifier hs-type">Star</span></a></span><span> </span><span id="local-6989586621679049679"><span class="annot"><span class="annottext">r :: Regex
+</span><a href="#local-6989586621679049679"><span class="hs-identifier hs-var">r</span></a></span></span><span>     </span><span class="hs-special">)</span><span>    </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-char">'('</span></span><span> </span><span class="annot"><span class="annottext">Char -&gt; ShowS
 forall a. a -&gt; [a] -&gt; [a]
 </span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">Regex -&gt; String
-</span><a href="#local-6989586621679049688"><span class="hs-identifier hs-var">sw</span></a></span><span> </span><span class="annot"><span class="annottext">Regex
-</span><a href="#local-6989586621679049678"><span class="hs-identifier hs-var">r</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
+</span><a href="#local-6989586621679049689"><span class="hs-identifier hs-var">sw</span></a></span><span> </span><span class="annot"><span class="annottext">Regex
+</span><a href="#local-6989586621679049679"><span class="hs-identifier hs-var">r</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
 forall a. [a] -&gt; [a] -&gt; [a]
 </span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="hs-string">&quot;)*&quot;</span></span><span>
-</span><span id="line-111"></span><span>
-</span><span id="line-112"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679049673"><span id="local-6989586621679049675"><span class="annot"><span class="hs-identifier hs-type">Semigroup</span></span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-113"></span><span>    </span><span id="local-6989586621679049671"><span class="annot"><span class="annottext">&lt;&gt; :: Regex -&gt; Regex -&gt; Regex
+</span><span id="line-110"></span><span>
+</span><span id="line-111"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679049674"><span id="local-6989586621679049676"><span class="annot"><span class="hs-identifier hs-type">Semigroup</span></span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-112"></span><span>    </span><span id="local-6989586621679049672"><span class="annot"><span class="annottext">&lt;&gt; :: Regex -&gt; Regex -&gt; Regex
 </span><span class="hs-operator hs-var hs-var hs-var hs-var">(&lt;&gt;)</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Regex -&gt; Regex -&gt; Regex
 </span><a href="Zozo.html#%2A%2A%2A"><span class="hs-operator hs-var">(***)</span></a></span><span>
-</span><span id="line-114"></span><span>
-</span><span id="line-115"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679049665"><span id="local-6989586621679049667"><span class="annot"><span class="hs-identifier hs-type">Monoid</span></span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-116"></span><span>    </span><span id="local-6989586621679049663"><span class="annot"><span class="annottext">mempty :: Regex
+</span><span id="line-113"></span><span>
+</span><span id="line-114"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679049666"><span id="local-6989586621679049668"><span class="annot"><span class="hs-identifier hs-type">Monoid</span></span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-115"></span><span>    </span><span id="local-6989586621679049664"><span class="annot"><span class="annottext">mempty :: Regex
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">mempty</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Regex
 </span><a href="Zozo.html#Eps"><span class="hs-identifier hs-var">Eps</span></a></span><span>
-</span><span id="line-117"></span><span>
-</span><span id="line-118"></span><span id="local-6989586621679049659"><span id="local-6989586621679049661"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Eq</span></span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span></span></span><span>
-</span><span id="line-119"></span><span>
-</span><span id="line-120"></span><span class="hs-comment">-- | For use with @OverloadedStrings@</span><span>
-</span><span id="line-121"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IsString</span></span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-122"></span><span>    </span><span id="local-6989586621679049655"><span class="annot"><span class="annottext">fromString :: String -&gt; Regex
+</span><span id="line-116"></span><span>
+</span><span id="line-117"></span><span id="local-6989586621679049660"><span id="local-6989586621679049662"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Eq</span></span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span></span></span><span>
+</span><span id="line-118"></span><span>
+</span><span id="line-119"></span><span class="hs-comment">-- | For use with @OverloadedStrings@</span><span>
+</span><span id="line-120"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IsString</span></span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-121"></span><span>    </span><span id="local-6989586621679049656"><span class="annot"><span class="annottext">fromString :: String -&gt; Regex
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">fromString</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; Regex
 </span><a href="Zozo.html#r"><span class="hs-identifier hs-var">r</span></a></span><span>
-</span><span id="line-123"></span><span>
-</span><span id="line-124"></span><span class="hs-comment">-- | For use with @OverloadedLists@</span><span>
-</span><span id="line-125"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679049652"><span class="annot"><span class="hs-identifier hs-type">IsList</span></span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-126"></span><span>    </span><span class="hs-keyword">type</span><span> </span><span class="hs-special">(</span><span id="Item"><span class="annot"><span class="hs-identifier hs-var">Item</span></span></span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span>
-</span><span id="line-127"></span><span>    </span><span id="local-6989586621679049649"><span class="annot"><span class="annottext">toList :: Regex -&gt; [Item Regex]
+</span><span id="line-122"></span><span>
+</span><span id="line-123"></span><span class="hs-comment">-- | For use with @OverloadedLists@</span><span>
+</span><span id="line-124"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679049653"><span class="annot"><span class="hs-identifier hs-type">IsList</span></span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-125"></span><span>    </span><span class="hs-keyword">type</span><span> </span><span class="hs-special">(</span><span id="Item"><span class="annot"><span class="hs-identifier hs-var">Item</span></span></span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span>
+</span><span id="line-126"></span><span>    </span><span id="local-6989586621679049650"><span class="annot"><span class="annottext">toList :: Regex -&gt; [Item Regex]
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">toList</span></span></span><span>   </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Set String -&gt; [String]
 forall a. Set a -&gt; [a]
 </span><span class="hs-identifier hs-var">S.toList</span></span><span> </span><span class="annot"><span class="annottext">(Set String -&gt; [String])
@@ -205,7 +204,7 @@ forall a. Set a -&gt; [a]
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Regex -&gt; Set String
 </span><a href="Zozo.html#eval"><span class="hs-identifier hs-var">eval</span></a></span><span>
-</span><span id="line-128"></span><span>    </span><span id="local-6989586621679049646"><span class="annot"><span class="annottext">fromList :: [Item Regex] -&gt; Regex
+</span><span id="line-127"></span><span>    </span><span id="local-6989586621679049647"><span class="annot"><span class="annottext">fromList :: [Item Regex] -&gt; Regex
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">fromList</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(String -&gt; Regex -&gt; Regex) -&gt; Regex -&gt; [String] -&gt; Regex
 forall (t :: * -&gt; *) a b.
 Foldable t =&gt;
@@ -217,135 +216,135 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; Regex
 </span><a href="Zozo.html#r"><span class="hs-identifier hs-var">r</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Regex
 </span><a href="Zozo.html#Nil"><span class="hs-identifier hs-var">Nil</span></a></span><span>
-</span><span id="line-129"></span><span>
-</span><span id="line-130"></span><span class="hs-comment">-- * Regex constructors</span><span>
-</span><span id="line-131"></span><span>
-</span><span id="line-132"></span><span class="hs-comment">-- | Synonym for the @Union@ constructor</span><span>
-</span><span id="line-133"></span><span class="hs-keyword">infixl</span><span> </span><span class="hs-number">6</span><span> </span><span class="annot"><a href="Zozo.html#%3C%7C%3E"><span class="hs-operator hs-type">&lt;|&gt;</span></a></span><span>
-</span><span id="line-134"></span><span class="annot"><a href="Zozo.html#%3C%7C%3E"><span class="hs-operator hs-type">(&lt;|&gt;)</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span>
-</span><span id="line-135"></span><span id="local-6989586621679049644"><span class="annot"><span class="annottext">x :: Regex
-</span><a href="#local-6989586621679049644"><span class="hs-identifier hs-var">x</span></a></span></span><span>   </span><span id="%3C%7C%3E"><span class="annot"><span class="annottext">&lt;|&gt; :: Regex -&gt; Regex -&gt; Regex
+</span><span id="line-128"></span><span>
+</span><span id="line-129"></span><span class="hs-comment">-- * Regex constructors</span><span>
+</span><span id="line-130"></span><span>
+</span><span id="line-131"></span><span class="hs-comment">-- | Synonym for the @Union@ constructor</span><span>
+</span><span id="line-132"></span><span class="hs-keyword">infixl</span><span> </span><span class="hs-number">6</span><span> </span><span class="annot"><a href="Zozo.html#%3C%7C%3E"><span class="hs-operator hs-type">&lt;|&gt;</span></a></span><span>
+</span><span id="line-133"></span><span class="annot"><a href="Zozo.html#%3C%7C%3E"><span class="hs-operator hs-type">(&lt;|&gt;)</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span>
+</span><span id="line-134"></span><span id="local-6989586621679049645"><span class="annot"><span class="annottext">x :: Regex
+</span><a href="#local-6989586621679049645"><span class="hs-identifier hs-var">x</span></a></span></span><span>   </span><span id="%3C%7C%3E"><span class="annot"><span class="annottext">&lt;|&gt; :: Regex -&gt; Regex -&gt; Regex
 </span><a href="Zozo.html#%3C%7C%3E"><span class="hs-operator hs-var hs-var">&lt;|&gt;</span></a></span></span><span> </span><span class="annot"><a href="Zozo.html#Nil"><span class="hs-identifier hs-type">Nil</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Regex
-</span><a href="#local-6989586621679049644"><span class="hs-identifier hs-var">x</span></a></span><span>
-</span><span id="line-136"></span><span class="annot"><a href="Zozo.html#Nil"><span class="hs-identifier hs-type">Nil</span></a></span><span> </span><span class="annot"><a href="Zozo.html#%3C%7C%3E"><span class="hs-operator hs-var">&lt;|&gt;</span></a></span><span> </span><span id="local-6989586621679049643"><span class="annot"><span class="annottext">y :: Regex
-</span><a href="#local-6989586621679049643"><span class="hs-identifier hs-var">y</span></a></span></span><span>   </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Regex
-</span><a href="#local-6989586621679049643"><span class="hs-identifier hs-var">y</span></a></span><span>
-</span><span id="line-137"></span><span id="local-6989586621679049642"><span class="annot"><span class="annottext">x :: Regex
-</span><a href="#local-6989586621679049642"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="annot"><a href="Zozo.html#%3C%7C%3E"><span class="hs-operator hs-var">&lt;|&gt;</span></a></span><span> </span><span id="local-6989586621679049641"><span class="annot"><span class="annottext">y :: Regex
-</span><a href="#local-6989586621679049641"><span class="hs-identifier hs-var">y</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Regex
-</span><a href="#local-6989586621679049642"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Regex -&gt; Regex -&gt; Bool
+</span><a href="#local-6989586621679049645"><span class="hs-identifier hs-var">x</span></a></span><span>
+</span><span id="line-135"></span><span class="annot"><a href="Zozo.html#Nil"><span class="hs-identifier hs-type">Nil</span></a></span><span> </span><span class="annot"><a href="Zozo.html#%3C%7C%3E"><span class="hs-operator hs-var">&lt;|&gt;</span></a></span><span> </span><span id="local-6989586621679049644"><span class="annot"><span class="annottext">y :: Regex
+</span><a href="#local-6989586621679049644"><span class="hs-identifier hs-var">y</span></a></span></span><span>   </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Regex
+</span><a href="#local-6989586621679049644"><span class="hs-identifier hs-var">y</span></a></span><span>
+</span><span id="line-136"></span><span id="local-6989586621679049643"><span class="annot"><span class="annottext">x :: Regex
+</span><a href="#local-6989586621679049643"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="annot"><a href="Zozo.html#%3C%7C%3E"><span class="hs-operator hs-var">&lt;|&gt;</span></a></span><span> </span><span id="local-6989586621679049642"><span class="annot"><span class="annottext">y :: Regex
+</span><a href="#local-6989586621679049642"><span class="hs-identifier hs-var">y</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Regex
+</span><a href="#local-6989586621679049643"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Regex -&gt; Regex -&gt; Bool
 forall a. Eq a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">Regex
-</span><a href="#local-6989586621679049641"><span class="hs-identifier hs-var">y</span></a></span><span>    </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Regex
-</span><a href="#local-6989586621679049642"><span class="hs-identifier hs-var">x</span></a></span><span>
-</span><span id="line-138"></span><span>        </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621679049642"><span class="hs-identifier hs-var">y</span></a></span><span>    </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Regex
+</span><a href="#local-6989586621679049643"><span class="hs-identifier hs-var">x</span></a></span><span>
+</span><span id="line-137"></span><span>        </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Bool
 </span><span class="hs-identifier hs-var">otherwise</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Regex -&gt; Regex -&gt; Regex
 </span><a href="Zozo.html#Union"><span class="hs-identifier hs-var">Union</span></a></span><span> </span><span class="annot"><span class="annottext">Regex
-</span><a href="#local-6989586621679049642"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Regex
-</span><a href="#local-6989586621679049641"><span class="hs-identifier hs-var">y</span></a></span><span>
-</span><span id="line-139"></span><span>
-</span><span id="line-140"></span><span class="hs-comment">-- | Synonym for the @Inter@ constructor</span><span>
-</span><span id="line-141"></span><span class="hs-keyword">infixl</span><span> </span><span class="hs-number">6</span><span> </span><span class="annot"><a href="Zozo.html#%3C%5E%3E"><span class="hs-operator hs-type">&lt;^&gt;</span></a></span><span>
-</span><span id="line-142"></span><span class="annot"><a href="Zozo.html#%3C%5E%3E"><span class="hs-operator hs-type">(&lt;^&gt;)</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span>
-</span><span id="line-143"></span><span class="annot"><a href="Zozo.html#Nil"><span class="hs-identifier hs-type">Nil</span></a></span><span> </span><span id="%3C%5E%3E"><span class="annot"><span class="annottext">&lt;^&gt; :: Regex -&gt; Regex -&gt; Regex
+</span><a href="#local-6989586621679049643"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Regex
+</span><a href="#local-6989586621679049642"><span class="hs-identifier hs-var">y</span></a></span><span>
+</span><span id="line-138"></span><span>
+</span><span id="line-139"></span><span class="hs-comment">-- | Synonym for the @Inter@ constructor</span><span>
+</span><span id="line-140"></span><span class="hs-keyword">infixl</span><span> </span><span class="hs-number">6</span><span> </span><span class="annot"><a href="Zozo.html#%3C%5E%3E"><span class="hs-operator hs-type">&lt;^&gt;</span></a></span><span>
+</span><span id="line-141"></span><span class="annot"><a href="Zozo.html#%3C%5E%3E"><span class="hs-operator hs-type">(&lt;^&gt;)</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span>
+</span><span id="line-142"></span><span class="annot"><a href="Zozo.html#Nil"><span class="hs-identifier hs-type">Nil</span></a></span><span> </span><span id="%3C%5E%3E"><span class="annot"><span class="annottext">&lt;^&gt; :: Regex -&gt; Regex -&gt; Regex
 </span><a href="Zozo.html#%3C%5E%3E"><span class="hs-operator hs-var hs-var">&lt;^&gt;</span></a></span></span><span> </span><span class="hs-identifier">_</span><span>   </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Regex
 </span><a href="Zozo.html#Nil"><span class="hs-identifier hs-var">Nil</span></a></span><span>
-</span><span id="line-144"></span><span class="hs-identifier">_</span><span>   </span><span class="annot"><a href="Zozo.html#%3C%5E%3E"><span class="hs-operator hs-var">&lt;^&gt;</span></a></span><span> </span><span class="annot"><a href="Zozo.html#Nil"><span class="hs-identifier hs-type">Nil</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Regex
+</span><span id="line-143"></span><span class="hs-identifier">_</span><span>   </span><span class="annot"><a href="Zozo.html#%3C%5E%3E"><span class="hs-operator hs-var">&lt;^&gt;</span></a></span><span> </span><span class="annot"><a href="Zozo.html#Nil"><span class="hs-identifier hs-type">Nil</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Regex
 </span><a href="Zozo.html#Nil"><span class="hs-identifier hs-var">Nil</span></a></span><span>
-</span><span id="line-145"></span><span id="local-6989586621679049640"><span class="annot"><span class="annottext">x :: Regex
-</span><a href="#local-6989586621679049640"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="annot"><a href="Zozo.html#%3C%5E%3E"><span class="hs-operator hs-var">&lt;^&gt;</span></a></span><span> </span><span id="local-6989586621679049639"><span class="annot"><span class="annottext">y :: Regex
-</span><a href="#local-6989586621679049639"><span class="hs-identifier hs-var">y</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Regex
-</span><a href="#local-6989586621679049640"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Regex -&gt; Regex -&gt; Bool
+</span><span id="line-144"></span><span id="local-6989586621679049641"><span class="annot"><span class="annottext">x :: Regex
+</span><a href="#local-6989586621679049641"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="annot"><a href="Zozo.html#%3C%5E%3E"><span class="hs-operator hs-var">&lt;^&gt;</span></a></span><span> </span><span id="local-6989586621679049640"><span class="annot"><span class="annottext">y :: Regex
+</span><a href="#local-6989586621679049640"><span class="hs-identifier hs-var">y</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Regex
+</span><a href="#local-6989586621679049641"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Regex -&gt; Regex -&gt; Bool
 forall a. Eq a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">Regex
-</span><a href="#local-6989586621679049639"><span class="hs-identifier hs-var">y</span></a></span><span>    </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Regex
-</span><a href="#local-6989586621679049640"><span class="hs-identifier hs-var">x</span></a></span><span>
-</span><span id="line-146"></span><span>        </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621679049640"><span class="hs-identifier hs-var">y</span></a></span><span>    </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Regex
+</span><a href="#local-6989586621679049641"><span class="hs-identifier hs-var">x</span></a></span><span>
+</span><span id="line-145"></span><span>        </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Bool
 </span><span class="hs-identifier hs-var">otherwise</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Regex -&gt; Regex -&gt; Regex
 </span><a href="Zozo.html#Inter"><span class="hs-identifier hs-var">Inter</span></a></span><span> </span><span class="annot"><span class="annottext">Regex
-</span><a href="#local-6989586621679049640"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Regex
-</span><a href="#local-6989586621679049639"><span class="hs-identifier hs-var">y</span></a></span><span>
-</span><span id="line-147"></span><span>
-</span><span id="line-148"></span><span class="hs-comment">-- | Synonym for the @Conc@ constructor</span><span>
-</span><span id="line-149"></span><span class="hs-keyword">infixl</span><span> </span><span class="hs-number">6</span><span> </span><span class="annot"><a href="Zozo.html#%2A%2A%2A"><span class="hs-operator hs-type">***</span></a></span><span>
-</span><span id="line-150"></span><span class="annot"><a href="Zozo.html#%2A%2A%2A"><span class="hs-operator hs-type">(***)</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span>
-</span><span id="line-151"></span><span id="local-6989586621679049638"><span class="annot"><span class="annottext">x :: Regex
-</span><a href="#local-6989586621679049638"><span class="hs-identifier hs-var">x</span></a></span></span><span>   </span><span id="%2A%2A%2A"><span class="annot"><span class="annottext">*** :: Regex -&gt; Regex -&gt; Regex
+</span><a href="#local-6989586621679049641"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Regex
+</span><a href="#local-6989586621679049640"><span class="hs-identifier hs-var">y</span></a></span><span>
+</span><span id="line-146"></span><span>
+</span><span id="line-147"></span><span class="hs-comment">-- | Synonym for the @Conc@ constructor</span><span>
+</span><span id="line-148"></span><span class="hs-keyword">infixl</span><span> </span><span class="hs-number">6</span><span> </span><span class="annot"><a href="Zozo.html#%2A%2A%2A"><span class="hs-operator hs-type">***</span></a></span><span>
+</span><span id="line-149"></span><span class="annot"><a href="Zozo.html#%2A%2A%2A"><span class="hs-operator hs-type">(***)</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span>
+</span><span id="line-150"></span><span id="local-6989586621679049639"><span class="annot"><span class="annottext">x :: Regex
+</span><a href="#local-6989586621679049639"><span class="hs-identifier hs-var">x</span></a></span></span><span>   </span><span id="%2A%2A%2A"><span class="annot"><span class="annottext">*** :: Regex -&gt; Regex -&gt; Regex
 </span><a href="Zozo.html#%2A%2A%2A"><span class="hs-operator hs-var hs-var">***</span></a></span></span><span> </span><span class="annot"><a href="Zozo.html#Eps"><span class="hs-identifier hs-type">Eps</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Regex
-</span><a href="#local-6989586621679049638"><span class="hs-identifier hs-var">x</span></a></span><span>
-</span><span id="line-152"></span><span class="annot"><a href="Zozo.html#Eps"><span class="hs-identifier hs-type">Eps</span></a></span><span> </span><span class="annot"><a href="Zozo.html#%2A%2A%2A"><span class="hs-operator hs-var">***</span></a></span><span> </span><span id="local-6989586621679049637"><span class="annot"><span class="annottext">y :: Regex
-</span><a href="#local-6989586621679049637"><span class="hs-identifier hs-var">y</span></a></span></span><span>   </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Regex
-</span><a href="#local-6989586621679049637"><span class="hs-identifier hs-var">y</span></a></span><span>
-</span><span id="line-153"></span><span class="hs-identifier">_</span><span>   </span><span class="annot"><a href="Zozo.html#%2A%2A%2A"><span class="hs-operator hs-var">***</span></a></span><span> </span><span class="annot"><a href="Zozo.html#Nil"><span class="hs-identifier hs-type">Nil</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Regex
+</span><a href="#local-6989586621679049639"><span class="hs-identifier hs-var">x</span></a></span><span>
+</span><span id="line-151"></span><span class="annot"><a href="Zozo.html#Eps"><span class="hs-identifier hs-type">Eps</span></a></span><span> </span><span class="annot"><a href="Zozo.html#%2A%2A%2A"><span class="hs-operator hs-var">***</span></a></span><span> </span><span id="local-6989586621679049638"><span class="annot"><span class="annottext">y :: Regex
+</span><a href="#local-6989586621679049638"><span class="hs-identifier hs-var">y</span></a></span></span><span>   </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Regex
+</span><a href="#local-6989586621679049638"><span class="hs-identifier hs-var">y</span></a></span><span>
+</span><span id="line-152"></span><span class="hs-identifier">_</span><span>   </span><span class="annot"><a href="Zozo.html#%2A%2A%2A"><span class="hs-operator hs-var">***</span></a></span><span> </span><span class="annot"><a href="Zozo.html#Nil"><span class="hs-identifier hs-type">Nil</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Regex
 </span><a href="Zozo.html#Nil"><span class="hs-identifier hs-var">Nil</span></a></span><span>
-</span><span id="line-154"></span><span class="annot"><a href="Zozo.html#Nil"><span class="hs-identifier hs-type">Nil</span></a></span><span> </span><span class="annot"><a href="Zozo.html#%2A%2A%2A"><span class="hs-operator hs-var">***</span></a></span><span> </span><span class="hs-identifier">_</span><span>   </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Regex
+</span><span id="line-153"></span><span class="annot"><a href="Zozo.html#Nil"><span class="hs-identifier hs-type">Nil</span></a></span><span> </span><span class="annot"><a href="Zozo.html#%2A%2A%2A"><span class="hs-operator hs-var">***</span></a></span><span> </span><span class="hs-identifier">_</span><span>   </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Regex
 </span><a href="Zozo.html#Nil"><span class="hs-identifier hs-var">Nil</span></a></span><span>
-</span><span id="line-155"></span><span id="local-6989586621679049636"><span class="annot"><span class="annottext">x :: Regex
-</span><a href="#local-6989586621679049636"><span class="hs-identifier hs-var">x</span></a></span></span><span>   </span><span class="annot"><a href="Zozo.html#%2A%2A%2A"><span class="hs-operator hs-var">***</span></a></span><span> </span><span id="local-6989586621679049635"><span class="annot"><span class="annottext">y :: Regex
-</span><a href="#local-6989586621679049635"><span class="hs-identifier hs-var">y</span></a></span></span><span>   </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Regex -&gt; Regex -&gt; Regex
+</span><span id="line-154"></span><span id="local-6989586621679049637"><span class="annot"><span class="annottext">x :: Regex
+</span><a href="#local-6989586621679049637"><span class="hs-identifier hs-var">x</span></a></span></span><span>   </span><span class="annot"><a href="Zozo.html#%2A%2A%2A"><span class="hs-operator hs-var">***</span></a></span><span> </span><span id="local-6989586621679049636"><span class="annot"><span class="annottext">y :: Regex
+</span><a href="#local-6989586621679049636"><span class="hs-identifier hs-var">y</span></a></span></span><span>   </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Regex -&gt; Regex -&gt; Regex
 </span><a href="Zozo.html#Conc"><span class="hs-identifier hs-var">Conc</span></a></span><span> </span><span class="annot"><span class="annottext">Regex
-</span><a href="#local-6989586621679049636"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Regex
-</span><a href="#local-6989586621679049635"><span class="hs-identifier hs-var">y</span></a></span><span>
-</span><span id="line-156"></span><span>
-</span><span id="line-157"></span><span class="hs-comment">-- | Synonym for the @Comp@ constructor</span><span>
-</span><span id="line-158"></span><span class="annot"><a href="Zozo.html#neg"><span class="hs-identifier hs-type">neg</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span>
-</span><span id="line-159"></span><span id="neg"><span class="annot"><span class="annottext">neg :: Regex -&gt; Regex
+</span><a href="#local-6989586621679049637"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Regex
+</span><a href="#local-6989586621679049636"><span class="hs-identifier hs-var">y</span></a></span><span>
+</span><span id="line-155"></span><span>
+</span><span id="line-156"></span><span class="hs-comment">-- | Synonym for the @Comp@ constructor</span><span>
+</span><span id="line-157"></span><span class="annot"><a href="Zozo.html#neg"><span class="hs-identifier hs-type">neg</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span>
+</span><span id="line-158"></span><span id="neg"><span class="annot"><span class="annottext">neg :: Regex -&gt; Regex
 </span><a href="Zozo.html#neg"><span class="hs-identifier hs-var hs-var">neg</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Regex -&gt; Regex
 </span><a href="Zozo.html#Comp"><span class="hs-identifier hs-var">Comp</span></a></span><span>
-</span><span id="line-160"></span><span>
-</span><span id="line-161"></span><span class="hs-comment">-- | Language set difference</span><span>
-</span><span id="line-162"></span><span class="hs-comment">-- \[ \Lambda \backslash \Gamma \hspace{10pt} \Lambda,\Gamma \subseteq \Sigma^* \]</span><span>
-</span><span id="line-163"></span><span class="hs-keyword">infixl</span><span> </span><span class="hs-number">6</span><span> </span><span class="annot"><a href="Zozo.html#%5C%5C"><span class="hs-operator hs-type">\\</span></a></span><span>
-</span><span id="line-164"></span><span class="annot"><a href="Zozo.html#%5C%5C"><span class="hs-operator hs-type">(\\)</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span>
-</span><span id="line-165"></span><span id="local-6989586621679049634"><span class="annot"><span class="annottext">r1 :: Regex
-</span><a href="#local-6989586621679049634"><span class="hs-identifier hs-var">r1</span></a></span></span><span> </span><span id="%5C%5C"><span class="annot"><span class="annottext">\\ :: Regex -&gt; Regex -&gt; Regex
-</span><a href="Zozo.html#%5C%5C"><span class="hs-operator hs-var hs-var">\\</span></a></span></span><span> </span><span id="local-6989586621679049633"><span class="annot"><span class="annottext">r2 :: Regex
-</span><a href="#local-6989586621679049633"><span class="hs-identifier hs-var">r2</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Regex
-</span><a href="#local-6989586621679049634"><span class="hs-identifier hs-var">r1</span></a></span><span> </span><span class="annot"><span class="annottext">Regex -&gt; Regex -&gt; Regex
+</span><span id="line-159"></span><span>
+</span><span id="line-160"></span><span class="hs-comment">-- | Language set difference</span><span>
+</span><span id="line-161"></span><span class="hs-comment">-- \[ \Lambda \backslash \Gamma \hspace{10pt} \Lambda,\Gamma \subseteq \Sigma^* \]</span><span>
+</span><span id="line-162"></span><span class="hs-keyword">infixl</span><span> </span><span class="hs-number">6</span><span> </span><span class="annot"><a href="Zozo.html#%5C%5C"><span class="hs-operator hs-type">\\</span></a></span><span>
+</span><span id="line-163"></span><span class="annot"><a href="Zozo.html#%5C%5C"><span class="hs-operator hs-type">(\\)</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span>
+</span><span id="line-164"></span><span id="local-6989586621679049635"><span class="annot"><span class="annottext">r1 :: Regex
+</span><a href="#local-6989586621679049635"><span class="hs-identifier hs-var">r1</span></a></span></span><span> </span><span id="%5C%5C"><span class="annot"><span class="annottext">\\ :: Regex -&gt; Regex -&gt; Regex
+</span><a href="Zozo.html#%5C%5C"><span class="hs-operator hs-var hs-var">\\</span></a></span></span><span> </span><span id="local-6989586621679049634"><span class="annot"><span class="annottext">r2 :: Regex
+</span><a href="#local-6989586621679049634"><span class="hs-identifier hs-var">r2</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Regex
+</span><a href="#local-6989586621679049635"><span class="hs-identifier hs-var">r1</span></a></span><span> </span><span class="annot"><span class="annottext">Regex -&gt; Regex -&gt; Regex
 </span><a href="Zozo.html#%3C%5E%3E"><span class="hs-operator hs-var">&lt;^&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Regex -&gt; Regex
 </span><a href="Zozo.html#neg"><span class="hs-identifier hs-var">neg</span></a></span><span> </span><span class="annot"><span class="annottext">Regex
-</span><a href="#local-6989586621679049633"><span class="hs-identifier hs-var">r2</span></a></span><span>
-</span><span id="line-166"></span><span>
-</span><span id="line-167"></span><span class="hs-comment">-- ** Specialized constructors</span><span>
-</span><span id="line-168"></span><span>
-</span><span id="line-169"></span><span class="hs-comment">-- | Treat string as concatenation of symbol regexes</span><span>
-</span><span id="line-170"></span><span class="hs-comment">--</span><span>
-</span><span id="line-171"></span><span class="hs-comment">-- @</span><span>
-</span><span id="line-172"></span><span class="hs-comment">--      r&quot;foo&quot;</span><span>
-</span><span id="line-173"></span><span class="hs-comment">-- @</span><span>
-</span><span id="line-174"></span><span class="annot"><a href="Zozo.html#r"><span class="hs-identifier hs-type">r</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span>
-</span><span id="line-175"></span><span id="r"><span class="annot"><span class="annottext">r :: String -&gt; Regex
+</span><a href="#local-6989586621679049634"><span class="hs-identifier hs-var">r2</span></a></span><span>
+</span><span id="line-165"></span><span>
+</span><span id="line-166"></span><span class="hs-comment">-- ** Specialized constructors</span><span>
+</span><span id="line-167"></span><span>
+</span><span id="line-168"></span><span class="hs-comment">-- | Treat string as concatenation of symbol regexes</span><span>
+</span><span id="line-169"></span><span class="hs-comment">--</span><span>
+</span><span id="line-170"></span><span class="hs-comment">-- @</span><span>
+</span><span id="line-171"></span><span class="hs-comment">-- r&quot;foo&quot; = Sym 'f' &lt;&gt; Sym 'o' &lt;&gt; Sym 'o'</span><span>
+</span><span id="line-172"></span><span class="hs-comment">-- @</span><span>
+</span><span id="line-173"></span><span class="annot"><a href="Zozo.html#r"><span class="hs-identifier hs-type">r</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span>
+</span><span id="line-174"></span><span id="r"><span class="annot"><span class="annottext">r :: String -&gt; Regex
 </span><a href="Zozo.html#r"><span class="hs-identifier hs-var hs-var">r</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Char -&gt; Regex) -&gt; String -&gt; Regex
 forall (t :: * -&gt; *) m a.
 (Foldable t, Monoid m) =&gt;
 (a -&gt; m) -&gt; t a -&gt; m
 </span><span class="hs-identifier hs-var">foldMap</span></span><span> </span><span class="annot"><span class="annottext">Char -&gt; Regex
 </span><a href="Zozo.html#Sym"><span class="hs-identifier hs-var">Sym</span></a></span><span>
-</span><span id="line-176"></span><span>
-</span><span id="line-177"></span><span class="hs-comment">-- | Synonym for @Star@ constructor</span><span>
-</span><span id="line-178"></span><span class="hs-comment">-- That is, zero or more</span><span>
-</span><span id="line-179"></span><span class="annot"><a href="Zozo.html#some"><span class="hs-identifier hs-type">some</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span>
-</span><span id="line-180"></span><span id="some"><span class="annot"><span class="annottext">some :: Regex -&gt; Regex
+</span><span id="line-175"></span><span>
+</span><span id="line-176"></span><span class="hs-comment">-- | Synonym for @Star@ constructor</span><span>
+</span><span id="line-177"></span><span class="hs-comment">-- That is, zero or more</span><span>
+</span><span id="line-178"></span><span class="annot"><a href="Zozo.html#some"><span class="hs-identifier hs-type">some</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span>
+</span><span id="line-179"></span><span id="some"><span class="annot"><span class="annottext">some :: Regex -&gt; Regex
 </span><a href="Zozo.html#some"><span class="hs-identifier hs-var hs-var">some</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Regex -&gt; Regex
 </span><a href="Zozo.html#Star"><span class="hs-identifier hs-var">Star</span></a></span><span>
-</span><span id="line-181"></span><span>
-</span><span id="line-182"></span><span class="hs-comment">-- | One or more</span><span>
-</span><span id="line-183"></span><span class="annot"><a href="Zozo.html#many"><span class="hs-identifier hs-type">many</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span>
-</span><span id="line-184"></span><span id="many"><span class="annot"><span class="annottext">many :: Regex -&gt; Regex
-</span><a href="Zozo.html#many"><span class="hs-identifier hs-var hs-var">many</span></a></span></span><span> </span><span id="local-6989586621679049631"><span class="annot"><span class="annottext">r :: Regex
-</span><a href="#local-6989586621679049631"><span class="hs-identifier hs-var">r</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Regex -&gt; Regex
+</span><span id="line-180"></span><span>
+</span><span id="line-181"></span><span class="hs-comment">-- | One or more</span><span>
+</span><span id="line-182"></span><span class="annot"><a href="Zozo.html#many"><span class="hs-identifier hs-type">many</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span>
+</span><span id="line-183"></span><span id="many"><span class="annot"><span class="annottext">many :: Regex -&gt; Regex
+</span><a href="Zozo.html#many"><span class="hs-identifier hs-var hs-var">many</span></a></span></span><span> </span><span id="local-6989586621679049632"><span class="annot"><span class="annottext">r :: Regex
+</span><a href="#local-6989586621679049632"><span class="hs-identifier hs-var">r</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Regex -&gt; Regex
 </span><a href="Zozo.html#some"><span class="hs-identifier hs-var">some</span></a></span><span> </span><span class="annot"><span class="annottext">Regex
-</span><a href="#local-6989586621679049631"><span class="hs-identifier hs-var">r</span></a></span><span> </span><span class="annot"><span class="annottext">Regex -&gt; Regex -&gt; Regex
+</span><a href="#local-6989586621679049632"><span class="hs-identifier hs-var">r</span></a></span><span> </span><span class="annot"><span class="annottext">Regex -&gt; Regex -&gt; Regex
 </span><a href="Zozo.html#%2A%2A%2A"><span class="hs-operator hs-var">***</span></a></span><span> </span><span class="annot"><span class="annottext">Regex
-</span><a href="#local-6989586621679049631"><span class="hs-identifier hs-var">r</span></a></span><span>
-</span><span id="line-185"></span><span>
-</span><span id="line-186"></span><span class="hs-comment">-- | Fold string over language union</span><span>
-</span><span id="line-187"></span><span class="hs-comment">--</span><span>
-</span><span id="line-188"></span><span class="hs-comment">-- @</span><span>
-</span><span id="line-189"></span><span class="hs-comment">--      numericChar = alphabet ['0'..'9']</span><span>
-</span><span id="line-190"></span><span class="hs-comment">-- @</span><span>
-</span><span id="line-191"></span><span class="annot"><a href="Zozo.html#alphabet"><span class="hs-identifier hs-type">alphabet</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span>
-</span><span id="line-192"></span><span id="alphabet"><span class="annot"><span class="annottext">alphabet :: String -&gt; Regex
+</span><a href="#local-6989586621679049632"><span class="hs-identifier hs-var">r</span></a></span><span>
+</span><span id="line-184"></span><span>
+</span><span id="line-185"></span><span class="hs-comment">-- | Fold string over language union</span><span>
+</span><span id="line-186"></span><span class="hs-comment">--</span><span>
+</span><span id="line-187"></span><span class="hs-comment">-- @</span><span>
+</span><span id="line-188"></span><span class="hs-comment">-- numericChar = alphabet ['0'..'9']</span><span>
+</span><span id="line-189"></span><span class="hs-comment">-- @</span><span>
+</span><span id="line-190"></span><span class="annot"><a href="Zozo.html#alphabet"><span class="hs-identifier hs-type">alphabet</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span>
+</span><span id="line-191"></span><span id="alphabet"><span class="annot"><span class="annottext">alphabet :: String -&gt; Regex
 </span><a href="Zozo.html#alphabet"><span class="hs-identifier hs-var hs-var">alphabet</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Regex -&gt; Regex -&gt; Regex) -&gt; [Regex] -&gt; Regex
 forall (t :: * -&gt; *) a. Foldable t =&gt; (a -&gt; a -&gt; a) -&gt; t a -&gt; a
 </span><span class="hs-identifier hs-var">foldr1</span></span><span> </span><span class="annot"><span class="annottext">Regex -&gt; Regex -&gt; Regex
@@ -355,32 +354,32 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 forall a b. (a -&gt; b) -&gt; [a] -&gt; [b]
 </span><span class="hs-identifier hs-var">map</span></span><span> </span><span class="annot"><span class="annottext">Char -&gt; Regex
 </span><a href="Zozo.html#Sym"><span class="hs-identifier hs-var">Sym</span></a></span><span>
-</span><span id="line-193"></span><span>
-</span><span id="line-194"></span><span class="hs-comment">-- | \[</span><span>
-</span><span id="line-195"></span><span class="hs-comment">-- \mathbb{1}_x = \begin{cases}</span><span>
-</span><span id="line-196"></span><span class="hs-comment">--          \epsilon \quad &amp; x = \top \\</span><span>
-</span><span id="line-197"></span><span class="hs-comment">--          \varnothing \quad &amp; \text{otherwise} \\</span><span>
-</span><span id="line-198"></span><span class="hs-comment">--         \end{cases}</span><span>
-</span><span id="line-199"></span><span class="hs-comment">-- \]</span><span>
-</span><span id="line-200"></span><span class="annot"><a href="Zozo.html#unit"><span class="hs-keyword hs-type">unit</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span>
-</span><span id="line-201"></span><span id="unit"><span class="annot"><span class="annottext">unit :: Bool -&gt; Regex
+</span><span id="line-192"></span><span>
+</span><span id="line-193"></span><span class="hs-comment">-- | \[</span><span>
+</span><span id="line-194"></span><span class="hs-comment">-- \mathbb{1}_x = \begin{cases}</span><span>
+</span><span id="line-195"></span><span class="hs-comment">--          \epsilon \quad &amp; x = \top \\</span><span>
+</span><span id="line-196"></span><span class="hs-comment">--          \varnothing \quad &amp; \text{otherwise} \\</span><span>
+</span><span id="line-197"></span><span class="hs-comment">--         \end{cases}</span><span>
+</span><span id="line-198"></span><span class="hs-comment">-- \]</span><span>
+</span><span id="line-199"></span><span class="annot"><a href="Zozo.html#unit"><span class="hs-keyword hs-type">unit</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span>
+</span><span id="line-200"></span><span id="unit"><span class="annot"><span class="annottext">unit :: Bool -&gt; Regex
 </span><a href="Zozo.html#unit"><span class="hs-keyword hs-var hs-var">unit</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">True</span></span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Regex
 </span><a href="Zozo.html#Eps"><span class="hs-identifier hs-var">Eps</span></a></span><span>
-</span><span id="line-202"></span><span class="annot"><a href="Zozo.html#unit"><span class="hs-keyword hs-var">unit</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">False</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Regex
+</span><span id="line-201"></span><span class="annot"><a href="Zozo.html#unit"><span class="hs-keyword hs-var">unit</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">False</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Regex
 </span><a href="Zozo.html#Nil"><span class="hs-identifier hs-var">Nil</span></a></span><span>
-</span><span id="line-203"></span><span>
-</span><span id="line-204"></span><span class="hs-comment">-- | Set membership</span><span>
-</span><span id="line-205"></span><span class="annot"><a href="Zozo.html#mem"><span class="hs-identifier hs-type">mem</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span>
-</span><span id="line-206"></span><span id="mem"><span class="annot"><span class="annottext">mem :: Regex -&gt; Regex -&gt; Bool
+</span><span id="line-202"></span><span>
+</span><span id="line-203"></span><span class="hs-comment">-- | Set membership</span><span>
+</span><span id="line-204"></span><span class="annot"><a href="Zozo.html#mem"><span class="hs-identifier hs-type">mem</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span>
+</span><span id="line-205"></span><span id="mem"><span class="annot"><span class="annottext">mem :: Regex -&gt; Regex -&gt; Bool
 </span><a href="Zozo.html#mem"><span class="hs-identifier hs-var hs-var">mem</span></a></span></span><span> </span><span class="hs-identifier">_</span><span> </span><span class="annot"><a href="Zozo.html#Eps"><span class="hs-identifier hs-type">Eps</span></a></span><span>           </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Bool
 </span><span class="hs-identifier hs-var">False</span></span><span>
-</span><span id="line-207"></span><span class="annot"><a href="Zozo.html#mem"><span class="hs-identifier hs-var">mem</span></a></span><span> </span><span id="local-6989586621679049629"><span class="annot"><span class="annottext">e :: Regex
+</span><span id="line-206"></span><span class="annot"><a href="Zozo.html#mem"><span class="hs-identifier hs-var">mem</span></a></span><span> </span><span id="local-6989586621679049629"><span class="annot"><span class="annottext">e :: Regex
 </span><a href="#local-6989586621679049629"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span class="annot"><a href="Zozo.html#Nil"><span class="hs-identifier hs-type">Nil</span></a></span><span>           </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Regex
 </span><a href="#local-6989586621679049629"><span class="hs-identifier hs-var">e</span></a></span><span> </span><span class="annot"><span class="annottext">Regex -&gt; Regex -&gt; Bool
 forall a. Eq a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">Regex
 </span><a href="Zozo.html#Eps"><span class="hs-identifier hs-var">Eps</span></a></span><span>
-</span><span id="line-208"></span><span class="annot"><a href="Zozo.html#mem"><span class="hs-identifier hs-var">mem</span></a></span><span> </span><span id="local-6989586621679049628"><span class="annot"><span class="annottext">e :: Regex
+</span><span id="line-207"></span><span class="annot"><a href="Zozo.html#mem"><span class="hs-identifier hs-var">mem</span></a></span><span> </span><span id="local-6989586621679049628"><span class="annot"><span class="annottext">e :: Regex
 </span><a href="#local-6989586621679049628"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Zozo.html#Sym"><span class="hs-identifier hs-type">Sym</span></a></span><span> </span><span id="local-6989586621679049627"><span class="annot"><span class="annottext">c :: Char
 </span><a href="#local-6989586621679049627"><span class="hs-identifier hs-var">c</span></a></span></span><span>      </span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Regex
 </span><a href="#local-6989586621679049628"><span class="hs-identifier hs-var">e</span></a></span><span> </span><span class="annot"><span class="annottext">Regex -&gt; Regex -&gt; Bool
@@ -388,7 +387,7 @@ forall a. Eq a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">Char -&gt; Regex
 </span><a href="Zozo.html#Sym"><span class="hs-identifier hs-var">Sym</span></a></span><span> </span><span class="annot"><span class="annottext">Char
 </span><a href="#local-6989586621679049627"><span class="hs-identifier hs-var">c</span></a></span><span>
-</span><span id="line-209"></span><span class="annot"><a href="Zozo.html#mem"><span class="hs-identifier hs-var">mem</span></a></span><span> </span><span id="local-6989586621679049626"><span class="annot"><span class="annottext">e :: Regex
+</span><span id="line-208"></span><span class="annot"><a href="Zozo.html#mem"><span class="hs-identifier hs-var">mem</span></a></span><span> </span><span id="local-6989586621679049626"><span class="annot"><span class="annottext">e :: Regex
 </span><a href="#local-6989586621679049626"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Zozo.html#Union"><span class="hs-identifier hs-type">Union</span></a></span><span> </span><span id="local-6989586621679049625"><span class="annot"><span class="annottext">r1 :: Regex
 </span><a href="#local-6989586621679049625"><span class="hs-identifier hs-var">r1</span></a></span></span><span> </span><span id="local-6989586621679049624"><span class="annot"><span class="annottext">r2 :: Regex
 </span><a href="#local-6989586621679049624"><span class="hs-identifier hs-var">r2</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Regex -&gt; Regex -&gt; Bool
@@ -399,7 +398,7 @@ forall a. Eq a =&gt; a -&gt; a -&gt; Bool
 </span><a href="Zozo.html#mem"><span class="hs-identifier hs-var">mem</span></a></span><span> </span><span class="annot"><span class="annottext">Regex
 </span><a href="#local-6989586621679049626"><span class="hs-identifier hs-var">e</span></a></span><span> </span><span class="annot"><span class="annottext">Regex
 </span><a href="#local-6989586621679049624"><span class="hs-identifier hs-var">r2</span></a></span><span>
-</span><span id="line-210"></span><span class="annot"><a href="Zozo.html#mem"><span class="hs-identifier hs-var">mem</span></a></span><span> </span><span id="local-6989586621679049622"><span class="annot"><span class="annottext">e :: Regex
+</span><span id="line-209"></span><span class="annot"><a href="Zozo.html#mem"><span class="hs-identifier hs-var">mem</span></a></span><span> </span><span id="local-6989586621679049622"><span class="annot"><span class="annottext">e :: Regex
 </span><a href="#local-6989586621679049622"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Zozo.html#Inter"><span class="hs-identifier hs-type">Inter</span></a></span><span> </span><span id="local-6989586621679049621"><span class="annot"><span class="annottext">r1 :: Regex
 </span><a href="#local-6989586621679049621"><span class="hs-identifier hs-var">r1</span></a></span></span><span> </span><span id="local-6989586621679049620"><span class="annot"><span class="annottext">r2 :: Regex
 </span><a href="#local-6989586621679049620"><span class="hs-identifier hs-var">r2</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Regex -&gt; Regex -&gt; Bool
@@ -410,13 +409,13 @@ forall a. Eq a =&gt; a -&gt; a -&gt; Bool
 </span><a href="Zozo.html#mem"><span class="hs-identifier hs-var">mem</span></a></span><span> </span><span class="annot"><span class="annottext">Regex
 </span><a href="#local-6989586621679049622"><span class="hs-identifier hs-var">e</span></a></span><span> </span><span class="annot"><span class="annottext">Regex
 </span><a href="#local-6989586621679049620"><span class="hs-identifier hs-var">r2</span></a></span><span>
-</span><span id="line-211"></span><span class="annot"><a href="Zozo.html#mem"><span class="hs-identifier hs-var">mem</span></a></span><span> </span><span id="local-6989586621679049618"><span class="annot"><span class="annottext">e :: Regex
+</span><span id="line-210"></span><span class="annot"><a href="Zozo.html#mem"><span class="hs-identifier hs-var">mem</span></a></span><span> </span><span id="local-6989586621679049618"><span class="annot"><span class="annottext">e :: Regex
 </span><a href="#local-6989586621679049618"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Zozo.html#Conc"><span class="hs-identifier hs-type">Conc</span></a></span><span>  </span><span id="local-6989586621679049617"><span class="annot"><span class="annottext">r1 :: Regex
 </span><a href="#local-6989586621679049617"><span class="hs-identifier hs-var">r1</span></a></span></span><span> </span><span id="local-6989586621679049616"><span class="annot"><span class="annottext">r2 :: Regex
 </span><a href="#local-6989586621679049616"><span class="hs-identifier hs-var">r2</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Bool
 forall a. HasCallStack =&gt; a
 </span><span class="hs-identifier hs-var">undefined</span></span><span>
-</span><span id="line-212"></span><span class="annot"><a href="Zozo.html#mem"><span class="hs-identifier hs-var">mem</span></a></span><span> </span><span id="local-6989586621679049614"><span class="annot"><span class="annottext">e :: Regex
+</span><span id="line-211"></span><span class="annot"><a href="Zozo.html#mem"><span class="hs-identifier hs-var">mem</span></a></span><span> </span><span id="local-6989586621679049614"><span class="annot"><span class="annottext">e :: Regex
 </span><a href="#local-6989586621679049614"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Zozo.html#Comp"><span class="hs-identifier hs-type">Comp</span></a></span><span> </span><span id="local-6989586621679049613"><span class="annot"><span class="annottext">r :: Regex
 </span><a href="#local-6989586621679049613"><span class="hs-identifier hs-var">r</span></a></span></span><span>     </span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool
 </span><span class="hs-identifier hs-var">not</span></span><span> </span><span class="annot"><span class="annottext">(Bool -&gt; Bool) -&gt; Bool -&gt; Bool
@@ -425,36 +424,36 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="Zozo.html#mem"><span class="hs-identifier hs-var">mem</span></a></span><span> </span><span class="annot"><span class="annottext">Regex
 </span><a href="#local-6989586621679049614"><span class="hs-identifier hs-var">e</span></a></span><span> </span><span class="annot"><span class="annottext">Regex
 </span><a href="#local-6989586621679049613"><span class="hs-identifier hs-var">r</span></a></span><span>
-</span><span id="line-213"></span><span class="annot"><a href="Zozo.html#mem"><span class="hs-identifier hs-var">mem</span></a></span><span> </span><span id="local-6989586621679049611"><span class="annot"><span class="annottext">e :: Regex
+</span><span id="line-212"></span><span class="annot"><a href="Zozo.html#mem"><span class="hs-identifier hs-var">mem</span></a></span><span> </span><span id="local-6989586621679049611"><span class="annot"><span class="annottext">e :: Regex
 </span><a href="#local-6989586621679049611"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Zozo.html#Star"><span class="hs-identifier hs-type">Star</span></a></span><span> </span><span id="local-6989586621679049610"><span class="annot"><span class="annottext">r :: Regex
 </span><a href="#local-6989586621679049610"><span class="hs-identifier hs-var">r</span></a></span></span><span>     </span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Bool
 forall a. HasCallStack =&gt; a
 </span><span class="hs-identifier hs-var">undefined</span></span><span>
-</span><span id="line-214"></span><span>
-</span><span id="line-215"></span><span class="hs-comment">-- | Auxiliary function to derive where</span><span>
-</span><span id="line-216"></span><span class="hs-comment">-- \[</span><span>
-</span><span id="line-217"></span><span class="hs-comment">-- \nu(R) = \begin{cases}</span><span>
-</span><span id="line-218"></span><span class="hs-comment">--          \epsilon \quad &amp; \epsilon \in R\\</span><span>
-</span><span id="line-219"></span><span class="hs-comment">--          \varnothing \quad &amp; \text{otherwise} \\</span><span>
-</span><span id="line-220"></span><span class="hs-comment">--          \end{cases}</span><span>
-</span><span id="line-221"></span><span class="hs-comment">-- \]</span><span>
-</span><span id="line-222"></span><span class="hs-comment">-- Equivalent to</span><span>
-</span><span id="line-223"></span><span class="hs-comment">-- @</span><span>
-</span><span id="line-224"></span><span class="hs-comment">--      unit . (Eps `mem`)</span><span>
-</span><span id="line-225"></span><span class="hs-comment">-- @</span><span>
-</span><span id="line-226"></span><span class="annot"><a href="Zozo.html#nu"><span class="hs-identifier hs-type">nu</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span>
-</span><span id="line-227"></span><span id="nu"><span class="annot"><span class="annottext">nu :: Regex -&gt; Regex
+</span><span id="line-213"></span><span>
+</span><span id="line-214"></span><span class="hs-comment">-- | Auxiliary function to derive where</span><span>
+</span><span id="line-215"></span><span class="hs-comment">-- \[</span><span>
+</span><span id="line-216"></span><span class="hs-comment">-- \nu(R) = \begin{cases}</span><span>
+</span><span id="line-217"></span><span class="hs-comment">--          \epsilon \quad &amp; \epsilon \in R\\</span><span>
+</span><span id="line-218"></span><span class="hs-comment">--          \varnothing \quad &amp; \text{otherwise} \\</span><span>
+</span><span id="line-219"></span><span class="hs-comment">--          \end{cases}</span><span>
+</span><span id="line-220"></span><span class="hs-comment">-- \]</span><span>
+</span><span id="line-221"></span><span class="hs-comment">-- Equivalent to</span><span>
+</span><span id="line-222"></span><span class="hs-comment">-- @</span><span>
+</span><span id="line-223"></span><span class="hs-comment">-- unit . (Eps `mem`)</span><span>
+</span><span id="line-224"></span><span class="hs-comment">-- @</span><span>
+</span><span id="line-225"></span><span class="annot"><a href="Zozo.html#nu"><span class="hs-identifier hs-type">nu</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span>
+</span><span id="line-226"></span><span id="nu"><span class="annot"><span class="annottext">nu :: Regex -&gt; Regex
 </span><a href="Zozo.html#nu"><span class="hs-identifier hs-var hs-var">nu</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Zozo.html#Sym"><span class="hs-identifier hs-type">Sym</span></a></span><span> </span><span id="local-6989586621679049609"><span class="annot"><span class="annottext">c :: Char
 </span><a href="#local-6989586621679049609"><span class="hs-identifier hs-var">c</span></a></span></span><span class="hs-special">)</span><span>       </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Regex
 </span><a href="Zozo.html#Nil"><span class="hs-identifier hs-var">Nil</span></a></span><span>
-</span><span id="line-228"></span><span class="annot"><a href="Zozo.html#nu"><span class="hs-identifier hs-var">nu</span></a></span><span> </span><span class="annot"><a href="Zozo.html#Eps"><span class="hs-identifier hs-type">Eps</span></a></span><span>           </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Regex
+</span><span id="line-227"></span><span class="annot"><a href="Zozo.html#nu"><span class="hs-identifier hs-var">nu</span></a></span><span> </span><span class="annot"><a href="Zozo.html#Eps"><span class="hs-identifier hs-type">Eps</span></a></span><span>           </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Regex
 </span><a href="Zozo.html#Eps"><span class="hs-identifier hs-var">Eps</span></a></span><span>
-</span><span id="line-229"></span><span class="annot"><a href="Zozo.html#nu"><span class="hs-identifier hs-var">nu</span></a></span><span> </span><span class="annot"><a href="Zozo.html#Nil"><span class="hs-identifier hs-type">Nil</span></a></span><span>           </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Regex
+</span><span id="line-228"></span><span class="annot"><a href="Zozo.html#nu"><span class="hs-identifier hs-var">nu</span></a></span><span> </span><span class="annot"><a href="Zozo.html#Nil"><span class="hs-identifier hs-type">Nil</span></a></span><span>           </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Regex
 </span><a href="Zozo.html#Nil"><span class="hs-identifier hs-var">Nil</span></a></span><span>
-</span><span id="line-230"></span><span class="annot"><a href="Zozo.html#nu"><span class="hs-identifier hs-var">nu</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Zozo.html#Star"><span class="hs-identifier hs-type">Star</span></a></span><span> </span><span id="local-6989586621679049608"><span class="annot"><span class="annottext">r :: Regex
+</span><span id="line-229"></span><span class="annot"><a href="Zozo.html#nu"><span class="hs-identifier hs-var">nu</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Zozo.html#Star"><span class="hs-identifier hs-type">Star</span></a></span><span> </span><span id="local-6989586621679049608"><span class="annot"><span class="annottext">r :: Regex
 </span><a href="#local-6989586621679049608"><span class="hs-identifier hs-var">r</span></a></span></span><span>     </span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Regex
 </span><a href="Zozo.html#Eps"><span class="hs-identifier hs-var">Eps</span></a></span><span>
-</span><span id="line-231"></span><span class="annot"><a href="Zozo.html#nu"><span class="hs-identifier hs-var">nu</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Zozo.html#Conc"><span class="hs-identifier hs-type">Conc</span></a></span><span>  </span><span id="local-6989586621679049607"><span class="annot"><span class="annottext">r1 :: Regex
+</span><span id="line-230"></span><span class="annot"><a href="Zozo.html#nu"><span class="hs-identifier hs-var">nu</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Zozo.html#Conc"><span class="hs-identifier hs-type">Conc</span></a></span><span>  </span><span id="local-6989586621679049607"><span class="annot"><span class="annottext">r1 :: Regex
 </span><a href="#local-6989586621679049607"><span class="hs-identifier hs-var">r1</span></a></span></span><span> </span><span id="local-6989586621679049606"><span class="annot"><span class="annottext">r2 :: Regex
 </span><a href="#local-6989586621679049606"><span class="hs-identifier hs-var">r2</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Regex -&gt; Regex
 </span><a href="Zozo.html#nu"><span class="hs-identifier hs-var">nu</span></a></span><span> </span><span class="annot"><span class="annottext">Regex
@@ -462,7 +461,7 @@ forall a. HasCallStack =&gt; a
 </span><a href="Zozo.html#%3C%5E%3E"><span class="hs-operator hs-var">&lt;^&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Regex -&gt; Regex
 </span><a href="Zozo.html#nu"><span class="hs-identifier hs-var">nu</span></a></span><span> </span><span class="annot"><span class="annottext">Regex
 </span><a href="#local-6989586621679049606"><span class="hs-identifier hs-var">r2</span></a></span><span>
-</span><span id="line-232"></span><span class="annot"><a href="Zozo.html#nu"><span class="hs-identifier hs-var">nu</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Zozo.html#Inter"><span class="hs-identifier hs-type">Inter</span></a></span><span> </span><span id="local-6989586621679049605"><span class="annot"><span class="annottext">r1 :: Regex
+</span><span id="line-231"></span><span class="annot"><a href="Zozo.html#nu"><span class="hs-identifier hs-var">nu</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Zozo.html#Inter"><span class="hs-identifier hs-type">Inter</span></a></span><span> </span><span id="local-6989586621679049605"><span class="annot"><span class="annottext">r1 :: Regex
 </span><a href="#local-6989586621679049605"><span class="hs-identifier hs-var">r1</span></a></span></span><span> </span><span id="local-6989586621679049604"><span class="annot"><span class="annottext">r2 :: Regex
 </span><a href="#local-6989586621679049604"><span class="hs-identifier hs-var">r2</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Regex -&gt; Regex
 </span><a href="Zozo.html#nu"><span class="hs-identifier hs-var">nu</span></a></span><span> </span><span class="annot"><span class="annottext">Regex
@@ -470,7 +469,7 @@ forall a. HasCallStack =&gt; a
 </span><a href="Zozo.html#%3C%5E%3E"><span class="hs-operator hs-var">&lt;^&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Regex -&gt; Regex
 </span><a href="Zozo.html#nu"><span class="hs-identifier hs-var">nu</span></a></span><span> </span><span class="annot"><span class="annottext">Regex
 </span><a href="#local-6989586621679049604"><span class="hs-identifier hs-var">r2</span></a></span><span>
-</span><span id="line-233"></span><span class="annot"><a href="Zozo.html#nu"><span class="hs-identifier hs-var">nu</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Zozo.html#Union"><span class="hs-identifier hs-type">Union</span></a></span><span> </span><span id="local-6989586621679049603"><span class="annot"><span class="annottext">r1 :: Regex
+</span><span id="line-232"></span><span class="annot"><a href="Zozo.html#nu"><span class="hs-identifier hs-var">nu</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Zozo.html#Union"><span class="hs-identifier hs-type">Union</span></a></span><span> </span><span id="local-6989586621679049603"><span class="annot"><span class="annottext">r1 :: Regex
 </span><a href="#local-6989586621679049603"><span class="hs-identifier hs-var">r1</span></a></span></span><span> </span><span id="local-6989586621679049602"><span class="annot"><span class="annottext">r2 :: Regex
 </span><a href="#local-6989586621679049602"><span class="hs-identifier hs-var">r2</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Regex -&gt; Regex
 </span><a href="Zozo.html#nu"><span class="hs-identifier hs-var">nu</span></a></span><span> </span><span class="annot"><span class="annottext">Regex
@@ -478,7 +477,7 @@ forall a. HasCallStack =&gt; a
 </span><a href="Zozo.html#%3C%7C%3E"><span class="hs-operator hs-var">&lt;|&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Regex -&gt; Regex
 </span><a href="Zozo.html#nu"><span class="hs-identifier hs-var">nu</span></a></span><span> </span><span class="annot"><span class="annottext">Regex
 </span><a href="#local-6989586621679049602"><span class="hs-identifier hs-var">r2</span></a></span><span>
-</span><span id="line-234"></span><span class="annot"><a href="Zozo.html#nu"><span class="hs-identifier hs-var">nu</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Zozo.html#Comp"><span class="hs-identifier hs-type">Comp</span></a></span><span> </span><span id="local-6989586621679049601"><span class="annot"><span class="annottext">r :: Regex
+</span><span id="line-233"></span><span class="annot"><a href="Zozo.html#nu"><span class="hs-identifier hs-var">nu</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Zozo.html#Comp"><span class="hs-identifier hs-type">Comp</span></a></span><span> </span><span id="local-6989586621679049601"><span class="annot"><span class="annottext">r :: Regex
 </span><a href="#local-6989586621679049601"><span class="hs-identifier hs-var">r</span></a></span></span><span>     </span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Regex
 </span><a href="Zozo.html#unit"><span class="hs-keyword hs-var">unit</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Regex -&gt; Regex
 </span><a href="Zozo.html#nu"><span class="hs-identifier hs-var">nu</span></a></span><span> </span><span class="annot"><span class="annottext">Regex
@@ -486,16 +485,16 @@ forall a. HasCallStack =&gt; a
 forall a. Eq a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">Regex
 </span><a href="Zozo.html#Nil"><span class="hs-identifier hs-var">Nil</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-235"></span><span>
-</span><span id="line-236"></span><span class="hs-comment">-- * Derivatives</span><span>
-</span><span id="line-237"></span><span>
-</span><span id="line-238"></span><span class="hs-comment">-- | Defining the (Brzozowski) derivative of a language R </span><span>
-</span><span id="line-239"></span><span class="hs-comment">-- with respect to the string \(u \in \Sigma^*\) to be</span><span>
-</span><span id="line-240"></span><span class="hs-comment">-- \[</span><span>
-</span><span id="line-241"></span><span class="hs-comment">--      u^{-1} L = \left\{ v : uv \in L \right\}</span><span>
-</span><span id="line-242"></span><span class="hs-comment">-- \]</span><span>
-</span><span id="line-243"></span><span class="annot"><a href="Zozo.html#derive"><span class="hs-identifier hs-type">derive</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span>
-</span><span id="line-244"></span><span id="derive"><span class="annot"><span class="annottext">derive :: String -&gt; Regex -&gt; Regex
+</span><span id="line-234"></span><span>
+</span><span id="line-235"></span><span class="hs-comment">-- * Derivatives</span><span>
+</span><span id="line-236"></span><span>
+</span><span id="line-237"></span><span class="hs-comment">-- | Defining the (Brzozowski) derivative of a language \(L\) </span><span>
+</span><span id="line-238"></span><span class="hs-comment">-- with respect to the string \(u \in \Sigma^*\) to be</span><span>
+</span><span id="line-239"></span><span class="hs-comment">-- \[</span><span>
+</span><span id="line-240"></span><span class="hs-comment">--      u^{-1} L = \left\{ v : uv \in L \right\}</span><span>
+</span><span id="line-241"></span><span class="hs-comment">-- \]</span><span>
+</span><span id="line-242"></span><span class="annot"><a href="Zozo.html#derive"><span class="hs-identifier hs-type">derive</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span>
+</span><span id="line-243"></span><span id="derive"><span class="annot"><span class="annottext">derive :: String -&gt; Regex -&gt; Regex
 </span><a href="Zozo.html#derive"><span class="hs-identifier hs-var hs-var">derive</span></a></span></span><span> </span><span id="local-6989586621679049600"><span class="annot"><span class="annottext">s :: String
 </span><a href="#local-6989586621679049600"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span id="local-6989586621679049599"><span class="annot"><span class="annottext">r :: Regex
 </span><a href="#local-6989586621679049599"><span class="hs-identifier hs-var">r</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Char -&gt; Regex -&gt; Regex) -&gt; Regex -&gt; String -&gt; Regex
@@ -508,15 +507,15 @@ Foldable t =&gt;
 forall a. [a] -&gt; [a]
 </span><span class="hs-identifier hs-var">reverse</span></span><span> </span><span class="annot"><span class="annottext">String
 </span><a href="#local-6989586621679049600"><span class="hs-identifier hs-var">s</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-245"></span><span>
-</span><span id="line-246"></span><span class="hs-comment">-- | Derivative for individual symbols, to fold over</span><span>
-</span><span id="line-247"></span><span class="annot"><a href="Zozo.html#deriveSym"><span class="hs-identifier hs-type">deriveSym</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Char</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span>
-</span><span id="line-248"></span><span id="deriveSym"><span class="annot"><span class="annottext">deriveSym :: Char -&gt; Regex -&gt; Regex
+</span><span id="line-244"></span><span>
+</span><span id="line-245"></span><span class="hs-comment">-- | Derivative for individual symbols, to fold over</span><span>
+</span><span id="line-246"></span><span class="annot"><a href="Zozo.html#deriveSym"><span class="hs-identifier hs-type">deriveSym</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Char</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span>
+</span><span id="line-247"></span><span id="deriveSym"><span class="annot"><span class="annottext">deriveSym :: Char -&gt; Regex -&gt; Regex
 </span><a href="Zozo.html#deriveSym"><span class="hs-identifier hs-var hs-var">deriveSym</span></a></span></span><span> </span><span class="hs-identifier">_</span><span> </span><span class="annot"><a href="Zozo.html#Eps"><span class="hs-identifier hs-type">Eps</span></a></span><span>           </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Regex
 </span><a href="Zozo.html#Nil"><span class="hs-identifier hs-var">Nil</span></a></span><span>
-</span><span id="line-249"></span><span class="annot"><a href="Zozo.html#deriveSym"><span class="hs-identifier hs-var">deriveSym</span></a></span><span> </span><span class="hs-identifier">_</span><span> </span><span class="annot"><a href="Zozo.html#Nil"><span class="hs-identifier hs-type">Nil</span></a></span><span>           </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Regex
+</span><span id="line-248"></span><span class="annot"><a href="Zozo.html#deriveSym"><span class="hs-identifier hs-var">deriveSym</span></a></span><span> </span><span class="hs-identifier">_</span><span> </span><span class="annot"><a href="Zozo.html#Nil"><span class="hs-identifier hs-type">Nil</span></a></span><span>           </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Regex
 </span><a href="Zozo.html#Nil"><span class="hs-identifier hs-var">Nil</span></a></span><span>
-</span><span id="line-250"></span><span class="annot"><a href="Zozo.html#deriveSym"><span class="hs-identifier hs-var">deriveSym</span></a></span><span> </span><span id="local-6989586621679049596"><span class="annot"><span class="annottext">d :: Char
+</span><span id="line-249"></span><span class="annot"><a href="Zozo.html#deriveSym"><span class="hs-identifier hs-var">deriveSym</span></a></span><span> </span><span id="local-6989586621679049596"><span class="annot"><span class="annottext">d :: Char
 </span><a href="#local-6989586621679049596"><span class="hs-identifier hs-var">d</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Zozo.html#Sym"><span class="hs-identifier hs-type">Sym</span></a></span><span>  </span><span id="local-6989586621679049595"><span class="annot"><span class="annottext">c :: Char
 </span><a href="#local-6989586621679049595"><span class="hs-identifier hs-var">c</span></a></span></span><span>     </span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Regex
 </span><a href="Zozo.html#unit"><span class="hs-keyword hs-var">unit</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Char
@@ -524,7 +523,7 @@ forall a. [a] -&gt; [a]
 forall a. Eq a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">Char
 </span><a href="#local-6989586621679049595"><span class="hs-identifier hs-var">c</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-251"></span><span class="annot"><a href="Zozo.html#deriveSym"><span class="hs-identifier hs-var">deriveSym</span></a></span><span> </span><span id="local-6989586621679049594"><span class="annot"><span class="annottext">d :: Char
+</span><span id="line-250"></span><span class="annot"><a href="Zozo.html#deriveSym"><span class="hs-identifier hs-var">deriveSym</span></a></span><span> </span><span id="local-6989586621679049594"><span class="annot"><span class="annottext">d :: Char
 </span><a href="#local-6989586621679049594"><span class="hs-identifier hs-var">d</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Zozo.html#Star"><span class="hs-identifier hs-type">Star</span></a></span><span> </span><span id="local-6989586621679049593"><span class="annot"><span class="annottext">r :: Regex
 </span><a href="#local-6989586621679049593"><span class="hs-identifier hs-var">r</span></a></span></span><span>     </span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Char -&gt; Regex -&gt; Regex
 </span><a href="Zozo.html#deriveSym"><span class="hs-identifier hs-var">deriveSym</span></a></span><span> </span><span class="annot"><span class="annottext">Char
@@ -533,7 +532,7 @@ forall a. Eq a =&gt; a -&gt; a -&gt; Bool
 </span><a href="Zozo.html#%2A%2A%2A"><span class="hs-operator hs-var">***</span></a></span><span> </span><span class="annot"><span class="annottext">Regex -&gt; Regex
 </span><a href="Zozo.html#Star"><span class="hs-identifier hs-var">Star</span></a></span><span> </span><span class="annot"><span class="annottext">Regex
 </span><a href="#local-6989586621679049593"><span class="hs-identifier hs-var">r</span></a></span><span>
-</span><span id="line-252"></span><span class="annot"><a href="Zozo.html#deriveSym"><span class="hs-identifier hs-var">deriveSym</span></a></span><span> </span><span id="local-6989586621679049592"><span class="annot"><span class="annottext">d :: Char
+</span><span id="line-251"></span><span class="annot"><a href="Zozo.html#deriveSym"><span class="hs-identifier hs-var">deriveSym</span></a></span><span> </span><span id="local-6989586621679049592"><span class="annot"><span class="annottext">d :: Char
 </span><a href="#local-6989586621679049592"><span class="hs-identifier hs-var">d</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Zozo.html#Comp"><span class="hs-identifier hs-type">Comp</span></a></span><span> </span><span id="local-6989586621679049591"><span class="annot"><span class="annottext">r1 :: Regex
 </span><a href="#local-6989586621679049591"><span class="hs-identifier hs-var">r1</span></a></span></span><span>    </span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Regex -&gt; Regex
 </span><a href="Zozo.html#Comp"><span class="hs-identifier hs-var">Comp</span></a></span><span> </span><span class="annot"><span class="annottext">(Regex -&gt; Regex) -&gt; Regex -&gt; Regex
@@ -542,7 +541,7 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="Zozo.html#deriveSym"><span class="hs-identifier hs-var">deriveSym</span></a></span><span> </span><span class="annot"><span class="annottext">Char
 </span><a href="#local-6989586621679049592"><span class="hs-identifier hs-var">d</span></a></span><span> </span><span class="annot"><span class="annottext">Regex
 </span><a href="#local-6989586621679049591"><span class="hs-identifier hs-var">r1</span></a></span><span>
-</span><span id="line-253"></span><span class="annot"><a href="Zozo.html#deriveSym"><span class="hs-identifier hs-var">deriveSym</span></a></span><span> </span><span id="local-6989586621679049590"><span class="annot"><span class="annottext">d :: Char
+</span><span id="line-252"></span><span class="annot"><a href="Zozo.html#deriveSym"><span class="hs-identifier hs-var">deriveSym</span></a></span><span> </span><span id="local-6989586621679049590"><span class="annot"><span class="annottext">d :: Char
 </span><a href="#local-6989586621679049590"><span class="hs-identifier hs-var">d</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Zozo.html#Union"><span class="hs-identifier hs-type">Union</span></a></span><span> </span><span id="local-6989586621679049589"><span class="annot"><span class="annottext">r1 :: Regex
 </span><a href="#local-6989586621679049589"><span class="hs-identifier hs-var">r1</span></a></span></span><span> </span><span id="local-6989586621679049588"><span class="annot"><span class="annottext">r2 :: Regex
 </span><a href="#local-6989586621679049588"><span class="hs-identifier hs-var">r2</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Char -&gt; Regex -&gt; Regex
@@ -553,7 +552,7 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="Zozo.html#deriveSym"><span class="hs-identifier hs-var">deriveSym</span></a></span><span> </span><span class="annot"><span class="annottext">Char
 </span><a href="#local-6989586621679049590"><span class="hs-identifier hs-var">d</span></a></span><span> </span><span class="annot"><span class="annottext">Regex
 </span><a href="#local-6989586621679049588"><span class="hs-identifier hs-var">r2</span></a></span><span>
-</span><span id="line-254"></span><span class="annot"><a href="Zozo.html#deriveSym"><span class="hs-identifier hs-var">deriveSym</span></a></span><span> </span><span id="local-6989586621679049587"><span class="annot"><span class="annottext">d :: Char
+</span><span id="line-253"></span><span class="annot"><a href="Zozo.html#deriveSym"><span class="hs-identifier hs-var">deriveSym</span></a></span><span> </span><span id="local-6989586621679049587"><span class="annot"><span class="annottext">d :: Char
 </span><a href="#local-6989586621679049587"><span class="hs-identifier hs-var">d</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Zozo.html#Inter"><span class="hs-identifier hs-type">Inter</span></a></span><span> </span><span id="local-6989586621679049586"><span class="annot"><span class="annottext">r1 :: Regex
 </span><a href="#local-6989586621679049586"><span class="hs-identifier hs-var">r1</span></a></span></span><span> </span><span id="local-6989586621679049585"><span class="annot"><span class="annottext">r2 :: Regex
 </span><a href="#local-6989586621679049585"><span class="hs-identifier hs-var">r2</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Char -&gt; Regex -&gt; Regex
@@ -564,11 +563,11 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="Zozo.html#deriveSym"><span class="hs-identifier hs-var">deriveSym</span></a></span><span> </span><span class="annot"><span class="annottext">Char
 </span><a href="#local-6989586621679049587"><span class="hs-identifier hs-var">d</span></a></span><span> </span><span class="annot"><span class="annottext">Regex
 </span><a href="#local-6989586621679049585"><span class="hs-identifier hs-var">r2</span></a></span><span>
-</span><span id="line-255"></span><span class="annot"><a href="Zozo.html#deriveSym"><span class="hs-identifier hs-var">deriveSym</span></a></span><span> </span><span id="local-6989586621679049584"><span class="annot"><span class="annottext">d :: Char
+</span><span id="line-254"></span><span class="annot"><a href="Zozo.html#deriveSym"><span class="hs-identifier hs-var">deriveSym</span></a></span><span> </span><span id="local-6989586621679049584"><span class="annot"><span class="annottext">d :: Char
 </span><a href="#local-6989586621679049584"><span class="hs-identifier hs-var">d</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Zozo.html#Conc"><span class="hs-identifier hs-type">Conc</span></a></span><span> </span><span id="local-6989586621679049583"><span class="annot"><span class="annottext">r1 :: Regex
 </span><a href="#local-6989586621679049583"><span class="hs-identifier hs-var">r1</span></a></span></span><span> </span><span id="local-6989586621679049582"><span class="annot"><span class="annottext">r2 :: Regex
 </span><a href="#local-6989586621679049582"><span class="hs-identifier hs-var">r2</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
-</span><span id="line-256"></span><span>    </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Char -&gt; Regex -&gt; Regex
+</span><span id="line-255"></span><span>    </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Char -&gt; Regex -&gt; Regex
 </span><a href="Zozo.html#deriveSym"><span class="hs-identifier hs-var">deriveSym</span></a></span><span> </span><span class="annot"><span class="annottext">Char
 </span><a href="#local-6989586621679049584"><span class="hs-identifier hs-var">d</span></a></span><span> </span><span class="annot"><span class="annottext">Regex
 </span><a href="#local-6989586621679049583"><span class="hs-identifier hs-var">r1</span></a></span><span> </span><span class="annot"><span class="annottext">Regex -&gt; Regex -&gt; Regex
@@ -581,19 +580,19 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="Zozo.html#deriveSym"><span class="hs-identifier hs-var">deriveSym</span></a></span><span> </span><span class="annot"><span class="annottext">Char
 </span><a href="#local-6989586621679049584"><span class="hs-identifier hs-var">d</span></a></span><span> </span><span class="annot"><span class="annottext">Regex
 </span><a href="#local-6989586621679049582"><span class="hs-identifier hs-var">r2</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-257"></span><span>
-</span><span id="line-258"></span><span class="hs-comment">-- | Infix @derive@ with regex symbol input</span><span>
-</span><span id="line-259"></span><span class="hs-keyword">infixl</span><span> </span><span class="hs-number">5</span><span> </span><span class="annot"><a href="Zozo.html#%5E-"><span class="hs-operator hs-type">^-</span></a></span><span>
-</span><span id="line-260"></span><span class="annot"><a href="Zozo.html#%5E-"><span class="hs-operator hs-type">(^-)</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span>
-</span><span id="line-261"></span><span id="%5E-"><span class="annot"><span class="annottext">^- :: String -&gt; Regex -&gt; Regex
+</span><span id="line-256"></span><span>
+</span><span id="line-257"></span><span class="hs-comment">-- | Infix @derive@ with regex symbol input</span><span>
+</span><span id="line-258"></span><span class="hs-keyword">infixl</span><span> </span><span class="hs-number">5</span><span> </span><span class="annot"><a href="Zozo.html#%5E-"><span class="hs-operator hs-type">^-</span></a></span><span>
+</span><span id="line-259"></span><span class="annot"><a href="Zozo.html#%5E-"><span class="hs-operator hs-type">(^-)</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span>
+</span><span id="line-260"></span><span id="%5E-"><span class="annot"><span class="annottext">^- :: String -&gt; Regex -&gt; Regex
 </span><a href="Zozo.html#%5E-"><span class="hs-operator hs-var hs-var">(^-)</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; Regex -&gt; Regex
 </span><a href="Zozo.html#derive"><span class="hs-identifier hs-var">derive</span></a></span><span>
-</span><span id="line-262"></span><span>
-</span><span id="line-263"></span><span class="hs-comment">-- * Evaluation and reduction</span><span>
-</span><span id="line-264"></span><span>
-</span><span id="line-265"></span><span class="hs-comment">-- | Continue reducing a regex</span><span>
-</span><span id="line-266"></span><span class="annot"><a href="Zozo.html#rreduce"><span class="hs-identifier hs-type">rreduce</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span>
-</span><span id="line-267"></span><span id="rreduce"><span class="annot"><span class="annottext">rreduce :: String -&gt; Regex -&gt; Regex
+</span><span id="line-261"></span><span>
+</span><span id="line-262"></span><span class="hs-comment">-- * Evaluation and reduction</span><span>
+</span><span id="line-263"></span><span>
+</span><span id="line-264"></span><span class="hs-comment">-- | Continue reducing a regex</span><span>
+</span><span id="line-265"></span><span class="annot"><a href="Zozo.html#rreduce"><span class="hs-identifier hs-type">rreduce</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span>
+</span><span id="line-266"></span><span id="rreduce"><span class="annot"><span class="annottext">rreduce :: String -&gt; Regex -&gt; Regex
 </span><a href="Zozo.html#rreduce"><span class="hs-identifier hs-var hs-var">rreduce</span></a></span></span><span> </span><span id="local-6989586621679049581"><span class="annot"><span class="annottext">s :: String
 </span><a href="#local-6989586621679049581"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Regex -&gt; Bool) -&gt; (Regex -&gt; Regex) -&gt; Regex -&gt; Regex
 forall a. (a -&gt; Bool) -&gt; (a -&gt; a) -&gt; a -&gt; a
@@ -609,23 +608,23 @@ forall a. (a -&gt; Bool) -&gt; (a -&gt; a) -&gt; a -&gt; a
 forall a. Eq a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">Regex
 </span><a href="#local-6989586621679049578"><span class="hs-identifier hs-var">x</span></a></span><span>
-</span><span id="line-268"></span><span>
-</span><span id="line-269"></span><span class="hs-comment">-- | Evaluate regex to a set of strings</span><span>
-</span><span id="line-270"></span><span class="annot"><a href="Zozo.html#eval"><span class="hs-identifier hs-type">eval</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">S.Set</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span>
-</span><span id="line-271"></span><span id="eval"><span class="annot"><span class="annottext">eval :: Regex -&gt; Set String
+</span><span id="line-267"></span><span>
+</span><span id="line-268"></span><span class="hs-comment">-- | Evaluate regex to a set of strings</span><span>
+</span><span id="line-269"></span><span class="annot"><a href="Zozo.html#eval"><span class="hs-identifier hs-type">eval</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">S.Set</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span>
+</span><span id="line-270"></span><span id="eval"><span class="annot"><span class="annottext">eval :: Regex -&gt; Set String
 </span><a href="Zozo.html#eval"><span class="hs-identifier hs-var hs-var">eval</span></a></span></span><span> </span><span class="annot"><a href="Zozo.html#Nil"><span class="hs-identifier hs-type">Nil</span></a></span><span>           </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Set String
 forall a. Set a
 </span><span class="hs-identifier hs-var">S.empty</span></span><span>
-</span><span id="line-272"></span><span class="annot"><a href="Zozo.html#eval"><span class="hs-identifier hs-var">eval</span></a></span><span> </span><span class="annot"><a href="Zozo.html#Eps"><span class="hs-identifier hs-type">Eps</span></a></span><span>           </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; Set String
+</span><span id="line-271"></span><span class="annot"><a href="Zozo.html#eval"><span class="hs-identifier hs-var">eval</span></a></span><span> </span><span class="annot"><a href="Zozo.html#Eps"><span class="hs-identifier hs-type">Eps</span></a></span><span>           </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; Set String
 forall a. a -&gt; Set a
 </span><span class="hs-identifier hs-var">S.singleton</span></span><span> </span><span class="annot"><span class="hs-string">&quot;&quot;</span></span><span>
-</span><span id="line-273"></span><span class="annot"><a href="Zozo.html#eval"><span class="hs-identifier hs-var">eval</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Zozo.html#Sym"><span class="hs-identifier hs-type">Sym</span></a></span><span>  </span><span id="local-6989586621679049575"><span class="annot"><span class="annottext">c :: Char
+</span><span id="line-272"></span><span class="annot"><a href="Zozo.html#eval"><span class="hs-identifier hs-var">eval</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Zozo.html#Sym"><span class="hs-identifier hs-type">Sym</span></a></span><span>  </span><span id="local-6989586621679049575"><span class="annot"><span class="annottext">c :: Char
 </span><a href="#local-6989586621679049575"><span class="hs-identifier hs-var">c</span></a></span></span><span>     </span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; Set String
 forall a. a -&gt; Set a
 </span><span class="hs-identifier hs-var">S.singleton</span></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Char
 Item String
 </span><a href="#local-6989586621679049575"><span class="hs-identifier hs-var">c</span></a></span><span class="hs-special">]</span><span>
-</span><span id="line-274"></span><span class="annot"><a href="Zozo.html#eval"><span class="hs-identifier hs-var">eval</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Zozo.html#Star"><span class="hs-identifier hs-type">Star</span></a></span><span> </span><span id="local-6989586621679049574"><span class="annot"><span class="annottext">r :: Regex
+</span><span id="line-273"></span><span class="annot"><a href="Zozo.html#eval"><span class="hs-identifier hs-var">eval</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Zozo.html#Star"><span class="hs-identifier hs-type">Star</span></a></span><span> </span><span id="local-6989586621679049574"><span class="annot"><span class="annottext">r :: Regex
 </span><a href="#local-6989586621679049574"><span class="hs-identifier hs-var">r</span></a></span></span><span>     </span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; Set String
 forall a. a -&gt; Set a
 </span><span class="hs-identifier hs-var">S.singleton</span></span><span> </span><span class="annot"><span class="annottext">(String -&gt; Set String) -&gt; String -&gt; Set String
@@ -636,7 +635,7 @@ forall a. Show a =&gt; a -&gt; String
 </span><a href="#local-6989586621679049574"><span class="hs-identifier hs-var">r</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
 forall a. [a] -&gt; [a] -&gt; [a]
 </span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="hs-string">&quot;*&quot;</span></span><span>
-</span><span id="line-275"></span><span class="annot"><a href="Zozo.html#eval"><span class="hs-identifier hs-var">eval</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Zozo.html#Union"><span class="hs-identifier hs-type">Union</span></a></span><span> </span><span id="local-6989586621679049573"><span class="annot"><span class="annottext">r1 :: Regex
+</span><span id="line-274"></span><span class="annot"><a href="Zozo.html#eval"><span class="hs-identifier hs-var">eval</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Zozo.html#Union"><span class="hs-identifier hs-type">Union</span></a></span><span> </span><span id="local-6989586621679049573"><span class="annot"><span class="annottext">r1 :: Regex
 </span><a href="#local-6989586621679049573"><span class="hs-identifier hs-var">r1</span></a></span></span><span> </span><span id="local-6989586621679049572"><span class="annot"><span class="annottext">r2 :: Regex
 </span><a href="#local-6989586621679049572"><span class="hs-identifier hs-var">r2</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Set String -&gt; Set String -&gt; Set String
 forall a. Ord a =&gt; Set a -&gt; Set a -&gt; Set a
@@ -645,7 +644,7 @@ forall a. Ord a =&gt; Set a -&gt; Set a -&gt; Set a
 </span><a href="#local-6989586621679049573"><span class="hs-identifier hs-var">r1</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Regex -&gt; Set String
 </span><a href="Zozo.html#eval"><span class="hs-identifier hs-var">eval</span></a></span><span> </span><span class="annot"><span class="annottext">Regex
 </span><a href="#local-6989586621679049572"><span class="hs-identifier hs-var">r2</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-276"></span><span class="annot"><a href="Zozo.html#eval"><span class="hs-identifier hs-var">eval</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Zozo.html#Inter"><span class="hs-identifier hs-type">Inter</span></a></span><span> </span><span id="local-6989586621679049570"><span class="annot"><span class="annottext">r1 :: Regex
+</span><span id="line-275"></span><span class="annot"><a href="Zozo.html#eval"><span class="hs-identifier hs-var">eval</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Zozo.html#Inter"><span class="hs-identifier hs-type">Inter</span></a></span><span> </span><span id="local-6989586621679049570"><span class="annot"><span class="annottext">r1 :: Regex
 </span><a href="#local-6989586621679049570"><span class="hs-identifier hs-var">r1</span></a></span></span><span> </span><span id="local-6989586621679049569"><span class="annot"><span class="annottext">r2 :: Regex
 </span><a href="#local-6989586621679049569"><span class="hs-identifier hs-var">r2</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Set String -&gt; Set String -&gt; Set String
 forall a. Ord a =&gt; Set a -&gt; Set a -&gt; Set a
@@ -654,10 +653,10 @@ forall a. Ord a =&gt; Set a -&gt; Set a -&gt; Set a
 </span><a href="#local-6989586621679049570"><span class="hs-identifier hs-var">r1</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Regex -&gt; Set String
 </span><a href="Zozo.html#eval"><span class="hs-identifier hs-var">eval</span></a></span><span> </span><span class="annot"><span class="annottext">Regex
 </span><a href="#local-6989586621679049569"><span class="hs-identifier hs-var">r2</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-277"></span><span class="annot"><a href="Zozo.html#eval"><span class="hs-identifier hs-var">eval</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Zozo.html#Conc"><span class="hs-identifier hs-type">Conc</span></a></span><span> </span><span id="local-6989586621679049567"><span class="annot"><span class="annottext">r1 :: Regex
+</span><span id="line-276"></span><span class="annot"><a href="Zozo.html#eval"><span class="hs-identifier hs-var">eval</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Zozo.html#Conc"><span class="hs-identifier hs-type">Conc</span></a></span><span> </span><span id="local-6989586621679049567"><span class="annot"><span class="annottext">r1 :: Regex
 </span><a href="#local-6989586621679049567"><span class="hs-identifier hs-var">r1</span></a></span></span><span> </span><span id="local-6989586621679049566"><span class="annot"><span class="annottext">r2 :: Regex
 </span><a href="#local-6989586621679049566"><span class="hs-identifier hs-var">r2</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
-</span><span id="line-278"></span><span>    </span><span class="annot"><span class="annottext">((String, String) -&gt; String) -&gt; Set (String, String) -&gt; Set String
+</span><span id="line-277"></span><span>    </span><span class="annot"><span class="annottext">((String, String) -&gt; String) -&gt; Set (String, String) -&gt; Set String
 forall b a. Ord b =&gt; (a -&gt; b) -&gt; Set a -&gt; Set b
 </span><span class="hs-identifier hs-var">S.map</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(String -&gt; ShowS) -&gt; (String, String) -&gt; String
 forall a b c. (a -&gt; b -&gt; c) -&gt; (a, b) -&gt; c
@@ -673,13 +672,13 @@ forall a b. Set a -&gt; Set b -&gt; Set (a, b)
 </span><a href="#local-6989586621679049567"><span class="hs-identifier hs-var">r1</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Regex -&gt; Set String
 </span><a href="Zozo.html#eval"><span class="hs-identifier hs-var">eval</span></a></span><span> </span><span class="annot"><span class="annottext">Regex
 </span><a href="#local-6989586621679049566"><span class="hs-identifier hs-var">r2</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-279"></span><span class="hs-pragma">{-# INLINE</span><span> </span><span class="annot"><a href="Zozo.html#eval"><span class="hs-pragma hs-type">eval</span></a></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-280"></span><span>
-</span><span id="line-281"></span><span class="hs-comment">-- | Check if regex matches.</span><span>
-</span><span id="line-282"></span><span class="hs-comment">-- Essentially checking if the derivative with respect to a string</span><span>
-</span><span id="line-283"></span><span class="hs-comment">-- is equal to the empty string \(\epsilon\)</span><span>
-</span><span id="line-284"></span><span class="annot"><a href="Zozo.html#match"><span class="hs-identifier hs-type">match</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span>
-</span><span id="line-285"></span><span id="match"><span class="annot"><span class="annottext">match :: String -&gt; Regex -&gt; Bool
+</span><span id="line-278"></span><span class="hs-pragma">{-# INLINE</span><span> </span><span class="annot"><a href="Zozo.html#eval"><span class="hs-pragma hs-type">eval</span></a></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-279"></span><span>
+</span><span id="line-280"></span><span class="hs-comment">-- | Check if regex matches.</span><span>
+</span><span id="line-281"></span><span class="hs-comment">-- Essentially checking if the derivative with respect to a string</span><span>
+</span><span id="line-282"></span><span class="hs-comment">-- is equal to the empty string \(\epsilon\)</span><span>
+</span><span id="line-283"></span><span class="annot"><a href="Zozo.html#match"><span class="hs-identifier hs-type">match</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span>
+</span><span id="line-284"></span><span id="match"><span class="annot"><span class="annottext">match :: String -&gt; Regex -&gt; Bool
 </span><a href="Zozo.html#match"><span class="hs-identifier hs-var hs-var">match</span></a></span></span><span> </span><span id="local-6989586621679049562"><span class="annot"><span class="annottext">s :: String
 </span><a href="#local-6989586621679049562"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span id="local-6989586621679049561"><span class="annot"><span class="annottext">r :: Regex
 </span><a href="#local-6989586621679049561"><span class="hs-identifier hs-var">r</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Regex -&gt; Regex
@@ -690,20 +689,20 @@ forall a b. Set a -&gt; Set b -&gt; Set (a, b)
 forall a. Eq a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">Regex
 </span><a href="Zozo.html#Eps"><span class="hs-identifier hs-var">Eps</span></a></span><span>
-</span><span id="line-286"></span><span>
-</span><span id="line-287"></span><span class="hs-comment">-- TODO maybe change this symbol</span><span>
-</span><span id="line-288"></span><span class="hs-keyword">infixl</span><span> </span><span class="hs-number">5</span><span> </span><span class="annot"><a href="Zozo.html#%3F"><span class="hs-operator hs-type">?</span></a></span><span>
-</span><span id="line-289"></span><span class="annot"><a href="Zozo.html#%3F"><span class="hs-operator hs-type">(?)</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span>
-</span><span id="line-290"></span><span id="%3F"><span class="annot"><span class="annottext">? :: String -&gt; Regex -&gt; Bool
+</span><span id="line-285"></span><span>
+</span><span id="line-286"></span><span class="hs-comment">-- TODO maybe change this symbol</span><span>
+</span><span id="line-287"></span><span class="hs-keyword">infixl</span><span> </span><span class="hs-number">5</span><span> </span><span class="annot"><a href="Zozo.html#%3F"><span class="hs-operator hs-type">?</span></a></span><span>
+</span><span id="line-288"></span><span class="annot"><a href="Zozo.html#%3F"><span class="hs-operator hs-type">(?)</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span>
+</span><span id="line-289"></span><span id="%3F"><span class="annot"><span class="annottext">? :: String -&gt; Regex -&gt; Bool
 </span><a href="Zozo.html#%3F"><span class="hs-operator hs-var hs-var">(?)</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; Regex -&gt; Bool
 </span><a href="Zozo.html#match"><span class="hs-identifier hs-var">match</span></a></span><span>
-</span><span id="line-291"></span><span class="hs-comment">-- ^ Infix synonym for @match@ </span><span>
-</span><span id="line-292"></span><span>
-</span><span id="line-293"></span><span class="hs-comment">-- * Regex sets</span><span>
-</span><span id="line-294"></span><span>
-</span><span id="line-295"></span><span class="hs-comment">-- | Alphabetic characters</span><span>
-</span><span id="line-296"></span><span class="annot"><a href="Zozo.html#alpha"><span class="hs-identifier hs-type">alpha</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span>
-</span><span id="line-297"></span><span id="alpha"><span class="annot"><span class="annottext">alpha :: Regex
+</span><span id="line-290"></span><span class="hs-comment">-- ^ Infix synonym for @match@ </span><span>
+</span><span id="line-291"></span><span>
+</span><span id="line-292"></span><span class="hs-comment">-- * Regex sets</span><span>
+</span><span id="line-293"></span><span>
+</span><span id="line-294"></span><span class="hs-comment">-- | Alphabetic characters</span><span>
+</span><span id="line-295"></span><span class="annot"><a href="Zozo.html#alpha"><span class="hs-identifier hs-type">alpha</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span>
+</span><span id="line-296"></span><span id="alpha"><span class="annot"><span class="annottext">alpha :: Regex
 </span><a href="Zozo.html#alpha"><span class="hs-identifier hs-var hs-var">alpha</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; Regex
 </span><a href="Zozo.html#alphabet"><span class="hs-identifier hs-var">alphabet</span></a></span><span> </span><span class="annot"><span class="annottext">(String -&gt; Regex) -&gt; String -&gt; Regex
 forall a b. (a -&gt; b) -&gt; a -&gt; b
@@ -714,45 +713,45 @@ forall a. [a] -&gt; [a] -&gt; [a]
 </span><span class="hs-operator hs-var">++</span></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Item String
 </span><span class="hs-char">'A'</span></span><span> </span><span class="hs-glyph">..</span><span> </span><span class="annot"><span class="annottext">Item String
 </span><span class="hs-char">'Z'</span></span><span class="hs-special">]</span><span>
-</span><span id="line-298"></span><span>
-</span><span id="line-299"></span><span class="hs-comment">-- | Numeric characters</span><span>
-</span><span id="line-300"></span><span class="annot"><a href="Zozo.html#numeric"><span class="hs-identifier hs-type">numeric</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span>
-</span><span id="line-301"></span><span id="numeric"><span class="annot"><span class="annottext">numeric :: Regex
+</span><span id="line-297"></span><span>
+</span><span id="line-298"></span><span class="hs-comment">-- | Numeric characters</span><span>
+</span><span id="line-299"></span><span class="annot"><a href="Zozo.html#numeric"><span class="hs-identifier hs-type">numeric</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span>
+</span><span id="line-300"></span><span id="numeric"><span class="annot"><span class="annottext">numeric :: Regex
 </span><a href="Zozo.html#numeric"><span class="hs-identifier hs-var hs-var">numeric</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; Regex
 </span><a href="Zozo.html#alphabet"><span class="hs-identifier hs-var">alphabet</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Item String
 </span><span class="hs-char">'0'</span></span><span> </span><span class="hs-glyph">..</span><span> </span><span class="annot"><span class="annottext">Item String
 </span><span class="hs-char">'9'</span></span><span class="hs-special">]</span><span>
-</span><span id="line-302"></span><span>
-</span><span id="line-303"></span><span class="hs-comment">-- | Alpha-numeric characters</span><span>
-</span><span id="line-304"></span><span class="annot"><a href="Zozo.html#alphaNum"><span class="hs-identifier hs-type">alphaNum</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span>
-</span><span id="line-305"></span><span id="alphaNum"><span class="annot"><span class="annottext">alphaNum :: Regex
+</span><span id="line-301"></span><span>
+</span><span id="line-302"></span><span class="hs-comment">-- | Alpha-numeric characters</span><span>
+</span><span id="line-303"></span><span class="annot"><a href="Zozo.html#alphaNum"><span class="hs-identifier hs-type">alphaNum</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span>
+</span><span id="line-304"></span><span id="alphaNum"><span class="annot"><span class="annottext">alphaNum :: Regex
 </span><a href="Zozo.html#alphaNum"><span class="hs-identifier hs-var hs-var">alphaNum</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Regex
 </span><a href="Zozo.html#alpha"><span class="hs-identifier hs-var">alpha</span></a></span><span> </span><span class="annot"><span class="annottext">Regex -&gt; Regex -&gt; Regex
 </span><a href="Zozo.html#%3C%7C%3E"><span class="hs-operator hs-var">&lt;|&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Regex
 </span><a href="Zozo.html#numeric"><span class="hs-identifier hs-var">numeric</span></a></span><span>
-</span><span id="line-306"></span><span>
-</span><span id="line-307"></span><span class="hs-comment">-- | Single space character</span><span>
-</span><span id="line-308"></span><span class="annot"><a href="Zozo.html#space"><span class="hs-identifier hs-type">space</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span>
-</span><span id="line-309"></span><span id="space"><span class="annot"><span class="annottext">space :: Regex
+</span><span id="line-305"></span><span>
+</span><span id="line-306"></span><span class="hs-comment">-- | Single space character</span><span>
+</span><span id="line-307"></span><span class="annot"><a href="Zozo.html#space"><span class="hs-identifier hs-type">space</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span>
+</span><span id="line-308"></span><span id="space"><span class="annot"><span class="annottext">space :: Regex
 </span><a href="Zozo.html#space"><span class="hs-identifier hs-var hs-var">space</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-string">&quot; &quot;</span></span><span>
-</span><span id="line-310"></span><span>
-</span><span id="line-311"></span><span class="hs-comment">-- | One or more spaces</span><span>
-</span><span id="line-312"></span><span class="annot"><a href="Zozo.html#spaces"><span class="hs-identifier hs-type">spaces</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span>
-</span><span id="line-313"></span><span id="spaces"><span class="annot"><span class="annottext">spaces :: Regex
+</span><span id="line-309"></span><span>
+</span><span id="line-310"></span><span class="hs-comment">-- | One or more spaces</span><span>
+</span><span id="line-311"></span><span class="annot"><a href="Zozo.html#spaces"><span class="hs-identifier hs-type">spaces</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span>
+</span><span id="line-312"></span><span id="spaces"><span class="annot"><span class="annottext">spaces :: Regex
 </span><a href="Zozo.html#spaces"><span class="hs-identifier hs-var hs-var">spaces</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Regex -&gt; Regex
 </span><a href="Zozo.html#many"><span class="hs-identifier hs-var">many</span></a></span><span> </span><span class="annot"><span class="annottext">Regex
 </span><a href="Zozo.html#space"><span class="hs-identifier hs-var">space</span></a></span><span>
-</span><span id="line-314"></span><span>
-</span><span id="line-315"></span><span class="hs-comment">-- | Any whitespace character </span><span>
-</span><span id="line-316"></span><span class="annot"><a href="Zozo.html#whiteSpace"><span class="hs-identifier hs-type">whiteSpace</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span>
-</span><span id="line-317"></span><span id="whiteSpace"><span class="annot"><span class="annottext">whiteSpace :: Regex
+</span><span id="line-313"></span><span>
+</span><span id="line-314"></span><span class="hs-comment">-- | Any whitespace character </span><span>
+</span><span id="line-315"></span><span class="annot"><a href="Zozo.html#whiteSpace"><span class="hs-identifier hs-type">whiteSpace</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span>
+</span><span id="line-316"></span><span id="whiteSpace"><span class="annot"><span class="annottext">whiteSpace :: Regex
 </span><a href="Zozo.html#whiteSpace"><span class="hs-identifier hs-var hs-var">whiteSpace</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-string">&quot; &quot;</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-string">&quot;\n&quot;</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-string">&quot;\t&quot;</span></span><span class="hs-special">]</span><span>
-</span><span id="line-318"></span><span>
-</span><span id="line-319"></span><span class="hs-comment">-- | Any ASCII character</span><span>
-</span><span id="line-320"></span><span class="annot"><a href="Zozo.html#anyChar"><span class="hs-identifier hs-type">anyChar</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span>
-</span><span id="line-321"></span><span id="anyChar"><span class="annot"><span class="annottext">anyChar :: Regex
+</span><span id="line-317"></span><span>
+</span><span id="line-318"></span><span class="hs-comment">-- | Any ASCII character</span><span>
+</span><span id="line-319"></span><span class="annot"><a href="Zozo.html#anyChar"><span class="hs-identifier hs-type">anyChar</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span>
+</span><span id="line-320"></span><span id="anyChar"><span class="annot"><span class="annottext">anyChar :: Regex
 </span><a href="Zozo.html#anyChar"><span class="hs-identifier hs-var hs-var">anyChar</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; Regex
 </span><a href="Zozo.html#alphabet"><span class="hs-identifier hs-var">alphabet</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Item String
 </span><span class="hs-char">'\NUL'</span></span><span> </span><span class="hs-glyph">..</span><span> </span><span class="annot"><span class="annottext">Item String
 </span><span class="hs-char">'\127'</span></span><span class="hs-special">]</span><span>
-</span><span id="line-322"></span></pre></body></html>
+</span><span id="line-321"></span></pre></body></html>
