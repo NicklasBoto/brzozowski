@@ -310,7 +310,7 @@ forall a. Eq a =&gt; a -&gt; a -&gt; Bool
 </span><span id="line-168"></span><span class="hs-comment">-- | Treat string as concatenation of symbol regexes</span><span>
 </span><span id="line-169"></span><span class="hs-comment">--</span><span>
 </span><span id="line-170"></span><span class="hs-comment">-- @</span><span>
-</span><span id="line-171"></span><span class="hs-comment">-- r&quot;foo&quot; = Sym 'f' &lt;&gt; Sym 'o' &lt;&gt; Sym 'o'</span><span>
+</span><span id="line-171"></span><span class="hs-comment">-- r&quot;foo&quot; = Sym \'f\' &lt;&gt; Sym \'o\' &lt;&gt; Sym \'o\'</span><span>
 </span><span id="line-172"></span><span class="hs-comment">-- @</span><span>
 </span><span id="line-173"></span><span class="annot"><a href="Zozo.html#r"><span class="hs-identifier hs-type">r</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Zozo.html#Regex"><span class="hs-identifier hs-type">Regex</span></a></span><span>
 </span><span id="line-174"></span><span id="r"><span class="annot"><span class="annottext">r :: String -&gt; Regex
