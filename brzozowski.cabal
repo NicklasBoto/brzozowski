@@ -3,7 +3,7 @@ version:             0.1.0.0
 -- synopsis:
 -- description:
 homepage:            https://github.com/NicklasBoto/brzozowski#readme
-license:             GPLv3
+license:             GPL-3
 license-file:        LICENSE
 author:              Nicklas Botö
 maintainer:          git@nicbot.xyz
