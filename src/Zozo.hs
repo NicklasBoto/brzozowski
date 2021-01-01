@@ -168,7 +168,7 @@ r1 \\ r2 = r1 <^> neg r2
 -- | Treat string as concatenation of symbol regexes
 --
 -- @
--- r"foo" = Sym \'f\' <> Sym \'o\' <> Sym \'o\'
+-- r"foo" = Sym \'f\' *** Sym \'o\' *** Sym \'o\'
 -- @
 r :: String -> Regex
 r = foldMap Sym
