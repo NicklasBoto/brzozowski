@@ -1,4 +1,5 @@
 {-# LANGUAGE        StandaloneDeriving #-}
+{-# LANGUAGE        FlexibleInstances  #-}
 {-# LANGUAGE        OverloadedStrings  #-}
 {-# LANGUAGE        OverloadedLists    #-}
 {-# LANGUAGE        TypeFamilies       #-}
@@ -37,6 +38,8 @@ module Zozo
     , some
     , many
     , alphabet
+    , between
+    , sepBy
     , unit
     , nu
     ,
@@ -60,7 +63,7 @@ module Zozo
     , space
     , spaces
     , whiteSpace
-    , anyChar
+    , ascii
     )
 where
 
@@ -99,15 +102,17 @@ data Regex
 instance Show Regex where
     show r = '^' : sw r ++ "$"
       where
-        sw x | x == anyChar = "."
+        sw x | x == ascii = "."
         sw Nil              = "∅"
         sw Eps              = "ε"
-        sw (Sym c      )    = [c]
-        sw (Union r1 r2)    = '(' : sw r1 ++ "|" ++ sw r2 ++ ")"
-        sw (Inter r1 r2)    = '(' : sw r1 ++ "^" ++ sw r2 ++ ")"
-        sw (Conc  r1 r2)    = sw r1 ++ sw r2
-        sw (Comp r     )    = "~(" ++ sw r ++ ")"
-        sw (Star r     )    = '(' : sw r ++ ")*"
+        sw (Sym c) | [c] ? spec = "\\" ++ [c]
+                   | otherwise  = [c]
+        sw (Union r1 r2) = '(' : sw r1 ++ "|" ++ sw r2 ++ ")"
+        sw (Inter r1 r2) = '(' : sw r1 ++ "^" ++ sw r2 ++ ")"
+        sw (Conc  r1 r2) = sw r1 ++ sw r2
+        sw (Comp r     ) = "~(" ++ sw r ++ ")"
+        sw (Star r     ) = '(' : sw r ++ ")*"
+        spec = [".", "(", ")", "|", "^", "~", "*", "\\"]
 
 instance Semigroup Regex where
     (<>) = (***)
@@ -126,6 +131,10 @@ instance IsList Regex where
     type (Item Regex) = String
     toList   = S.toList . eval
     fromList = foldr ((<|>) . r) Nil
+
+-- Looks nicer...
+instance {-# OVERLAPPING #-} Show (S.Set String) where
+        show s = "{" ++ (tail . init . show) (S.toList s) ++ "}"
 
 -- * Regex constructors
 
@@ -190,6 +199,12 @@ many r = some r *** r
 -- @
 alphabet :: String -> Regex
 alphabet = foldr1 (<|>) . map Sym
+
+between :: Regex -> Regex -> Regex
+between c d = d <> (c \\ d) <> d
+
+sepBy :: Regex -> Regex -> Regex
+sepBy c d = c <> some (d <> c)
 
 -- | \[
 -- \mathbb{1}_x = \begin{cases}
@@ -314,8 +329,8 @@ spaces = many space
 
 -- | Any whitespace character 
 whiteSpace :: Regex
-whiteSpace = [" ", "\n", "\t"]
+whiteSpace  = [" ", "\n", "\t"]
 
 -- | Any ASCII character
-anyChar :: Regex
-anyChar = alphabet ['\NUL' .. '\127']
+ascii :: Regex
+ascii = alphabet ['\NUL' .. '\127']
