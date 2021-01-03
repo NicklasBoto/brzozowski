@@ -45,8 +45,7 @@ module Zozo
     ,
 
         -- * Derivatives
-      mem
-    , derive
+      derive
     , (^-)
 
         -- * Evaluation
@@ -178,7 +177,7 @@ r1 \\ r2 = r1 <^> neg r2
 -- | Treat string as concatenation of symbol regexes
 --
 -- @
---      r"foo"
+-- r"foo" = Sym \'f\' *** Sym \'o\' *** Sym \'o\'
 -- @
 r :: String -> Regex
 r = foldMap Sym
@@ -195,7 +194,7 @@ many r = some r *** r
 -- | Fold string over language union
 --
 -- @
---      numericChar = alphabet ['0'..'9']
+-- numericChar = alphabet ['0'..'9']
 -- @
 alphabet :: String -> Regex
 alphabet = foldr1 (<|>) . map Sym
@@ -236,7 +235,7 @@ mem e (Star r     ) = undefined
 -- \]
 -- Equivalent to
 -- @
---      unit . (Eps `mem`)
+-- unit . (Eps `mem`)
 -- @
 nu :: Regex -> Regex
 nu (Sym c)       = Nil
@@ -250,7 +249,7 @@ nu (Comp r     ) = unit (nu r == Nil)
 
 -- * Derivatives
 
--- | Defining the (Brzozowski) derivative of a language R 
+-- | Defining the (Brzozowski) derivative of a language \(L\) 
 -- with respect to the string \(u \in \Sigma^*\) to be
 -- \[
 --      u^{-1} L = \left\{ v : uv \in L \right\}
