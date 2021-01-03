@@ -4,7 +4,7 @@
 {-# LANGUAGE        OverloadedLists    #-}
 {-# LANGUAGE        TypeFamilies       #-}
 {-# LANGUAGE        Trustworthy        #-}
-{-# OPTIONS_HADDOCK NotHome            #-}
+{-# OPTIONS_HADDOCK not-home           #-}
 
 {-|
 Module      : Zozo
@@ -37,9 +37,8 @@ module Zozo
       r
     , some
     , many
+    , mayb
     , alphabet
-    , between
-    , sepBy
     , unit
     , nu
     ,
@@ -58,11 +57,19 @@ module Zozo
         -- * Regex sets
       alpha
     , numeric
+    , int
     , alphaNum
     , space
     , spaces
     , whiteSpace
     , ascii
+    ,
+
+        -- ** Set combinators
+      between
+    , sepBy
+    , (**>)
+    , (<**)
     )
 where
 
@@ -177,33 +184,43 @@ r1 \\ r2 = r1 <^> neg r2
 -- | Treat string as concatenation of symbol regexes
 --
 -- @
--- r"foo" = Sym \'f\' *** Sym \'o\' *** Sym \'o\'
+--  r"foo" = Sym \'f\' *** Sym \'o\' *** Sym \'o\'
 -- @
 r :: String -> Regex
 r = foldMap Sym
 
 -- | Synonym for @Star@ constructor
--- That is, zero or more
+-- That is, zero or more.
+--
+-- @
+--  ^r*$
+-- @
 some :: Regex -> Regex
 some = Star
 
 -- | One or more
+--
+-- @
+--  ^r+$
+-- @
 many :: Regex -> Regex
 many r = some r *** r
+
+-- | Zero or one
+--
+-- @
+--  ^r?$
+-- @
+mayb :: Regex -> Regex
+mayb = (<|>) ""
 
 -- | Fold string over language union
 --
 -- @
--- numericChar = alphabet ['0'..'9']
+--  numericChar = alphabet ['0'..'9']
 -- @
 alphabet :: String -> Regex
 alphabet = foldr1 (<|>) . map Sym
-
-between :: Regex -> Regex -> Regex
-between c d = d <> (c \\ d) <> d
-
-sepBy :: Regex -> Regex -> Regex
-sepBy c d = c <> some (d <> c)
 
 -- | \[
 -- \mathbb{1}_x = \begin{cases}
@@ -234,8 +251,9 @@ mem e (Star r     ) = undefined
 --          \end{cases}
 -- \]
 -- Equivalent to
+--
 -- @
--- unit . (Eps `mem`)
+--  unit . (Eps `mem`)
 -- @
 nu :: Regex -> Regex
 nu (Sym c)       = Nil
@@ -314,6 +332,10 @@ alpha = alphabet $ ['a' .. 'z'] ++ ['A' .. 'Z']
 numeric :: Regex
 numeric = alphabet ['0' .. '9']
 
+-- | Positive or negative integer
+int :: Regex
+int = "-" **> many numeric
+
 -- | Alpha-numeric characters
 alphaNum :: Regex
 alphaNum = alpha <|> numeric
@@ -333,3 +355,36 @@ whiteSpace  = [" ", "\n", "\t"]
 -- | Any ASCII character
 ascii :: Regex
 ascii = alphabet ['\NUL' .. '\127']
+
+-- ** Set combinators
+
+-- I will use <> in place of *** from hereon
+
+-- | Regex inside delimiters
+--
+-- >>> "'a'" ? ascii `between` "'"
+-- True
+between :: Regex -> Regex -> Regex
+between c d = d <> (c \\ d) <> d
+
+-- | One or more regexes seperated by another regex
+--
+-- @
+--  list :: Regex
+--  list = "[" <> int \`sepBy\` "," <> "]"
+-- @
+sepBy :: Regex -> Regex -> Regex
+sepBy c d = c <> some (d <> c)
+
+-- | Alternating concat
+--
+-- @
+--  "'" **> "a" = "'a" \<|\> "a"
+-- @
+(**>) :: Regex -> Regex -> Regex
+(**>) p = (mayb p <>)
+
+-- | Suffix variant of '(**>)'
+(<**) :: Regex -> Regex -> Regex
+(<**) r p = r <> mayb p
+
