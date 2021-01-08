@@ -50,6 +50,7 @@ module Zozo
         -- * Evaluation
     , rreduce
     , eval
+    , printMatching
     , match
     , (?)
     ,
@@ -68,8 +69,8 @@ module Zozo
         -- ** Set combinators
       between
     , sepBy
-    , (**>)
-    , (<**)
+    , (?>)
+    , (<?)
     )
 where
 
@@ -303,16 +304,38 @@ eval :: Regex -> S.Set String
 eval Nil           = S.empty
 eval Eps           = S.singleton ""
 eval (Sym  c     ) = S.singleton [c]
-eval (Star r     ) = S.singleton $ show r ++ "*"
+eval (Star r     ) = S.singleton $ show (eval r) ++ "*"
 eval (Union r1 r2) = S.union (eval r1) (eval r2)
 eval (Inter r1 r2) = S.intersection (eval r1) (eval r2)
 eval (Conc r1 r2) =
     S.map (uncurry (<>)) $ S.cartesianProduct (eval r1) (eval r2)
 {-# INLINE eval #-}
 
+-- | Print all strings that match a regex.
+-- Note that this does not print the full list when
+-- the number of matches is infinite.
+--
+-- >>> printMatching $ some "a"
+-- {"a"}*
+-- 
+-- and not
+--
+-- @
+--  
+--  a
+--  aa
+--  aaa
+--  ...
+-- @
+--
+-- If you want to such matches, please use the derivative '(^-)'
+-- or the match function '(?)'
+printMatching :: Regex -> IO ()
+printMatching = mapM_ putStrLn . eval
+
 -- | Check if regex matches.
 -- Essentially checking if the derivative with respect to a string
--- is equal to the empty string \(\epsilon\)
+-- contains the empty string, \(\epsilon\).
 match :: String -> Regex -> Bool
 match s r = nu (s ^- r) == Eps
 
@@ -334,7 +357,7 @@ numeric = alphabet ['0' .. '9']
 
 -- | Positive or negative integer
 int :: Regex
-int = "-" **> many numeric
+int = "-" ?> many numeric
 
 -- | Alpha-numeric characters
 alphaNum :: Regex
@@ -350,7 +373,7 @@ spaces = many space
 
 -- | Any whitespace character 
 whiteSpace :: Regex
-whiteSpace  = [" ", "\n", "\t"]
+whiteSpace = [" ", "\n", "\t"]
 
 -- | Any ASCII character
 ascii :: Regex
@@ -379,12 +402,12 @@ sepBy c d = c <> some (d <> c)
 -- | Alternating concat
 --
 -- @
---  "'" **> "a" = "'a" \<|\> "a"
+--  "'" ?> "a" = "'a" \<|\> "a"
 -- @
-(**>) :: Regex -> Regex -> Regex
-(**>) p = (mayb p <>)
+(?>) :: Regex -> Regex -> Regex
+(?>) p = (mayb p <>)
 
--- | Suffix variant of '(**>)'
-(<**) :: Regex -> Regex -> Regex
-(<**) r p = r <> mayb p
+-- | Suffix variant of '(?>)'
+(<?) :: Regex -> Regex -> Regex
+(<?) r p = r <> mayb p
 
